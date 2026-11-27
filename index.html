@@ -1,0 +1,5815 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <title>Battle Factory — Reg M-C Doubles</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+  <style>
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+
+      font-family: 'Inter', sans-serif;
+
+      background: radial-gradient(circle at 50% 15%, #0f172a 0%, #020617 100%);
+
+      color: #f8fafc;
+
+      margin: 0;
+
+      padding: 12px;
+
+      min-height: 100vh;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      overflow-x: hidden;
+
+    }
+
+
+
+    /* Centered iPad 1024px Landscape Tablet Shell */
+
+    .tablet-bezel {
+
+      width: 100%;
+
+      max-width: 1044px;
+
+      min-height: 720px;
+
+      background: #070b14;
+
+      border-radius: 34px;
+
+      padding: 14px;
+
+      box-shadow: 0 32px 90px rgba(0, 0, 0, 0.9), inset 0 0 0 2px #1e293b;
+
+      position: relative;
+
+    }
+
+    .tablet-screen {
+
+      width: 100%;
+
+      min-height: 692px;
+
+      background: linear-gradient(180deg, #0f172a 0%, #0b1120 100%);
+
+      border-radius: 22px;
+
+      overflow: hidden;
+
+      display: flex;
+
+      flex-direction: column;
+
+      border: 1px solid rgba(148, 163, 184, 0.16);
+
+      position: relative;
+
+    }
+
+
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+
+    ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+
+    ::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.45); border-radius: 999px; }
+
+
+
+    /* Arena & Status Animations */
+
+    @keyframes floatMon {
+
+      0%, 100% { transform: translateY(0px); }
+
+      50% { transform: translateY(-5px); }
+
+    }
+
+    @keyframes hitShake {
+
+      0%, 100% { transform: translateX(0); filter: brightness(1); }
+
+      20% { transform: translateX(-10px); filter: brightness(2.4) sepia(0.6) hue-rotate(-30deg); }
+
+      40% { transform: translateX(10px); }
+
+      60% { transform: translateX(-7px); }
+
+      80% { transform: translateX(7px); }
+
+    }
+
+    @keyframes attackLunge {
+
+      0% { transform: scale(1) translateY(0); }
+
+      40% { transform: scale(1.18) translateY(-11px); }
+
+      100% { transform: scale(1) translateY(0); }
+
+    }
+
+    @keyframes faintDrop {
+
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+
+      100% { opacity: 0; transform: translateY(26px) scale(0.75); }
+
+    }
+
+    @keyframes sendOutPop {
+
+      0% { opacity: 0; transform: scale(0.45) translateY(16px); filter: brightness(2.5); }
+
+      70% { opacity: 1; transform: scale(1.08) translateY(-3px); filter: brightness(1.4); }
+
+      100% { opacity: 1; transform: scale(1) translateY(0); filter: brightness(1); }
+
+    }
+
+    @keyframes megaBurst {
+
+      0% { transform: scale(0.85); filter: brightness(1) hue-rotate(0deg); }
+
+      45% { transform: scale(1.3) rotate(-4deg); filter: brightness(2.8) hue-rotate(140deg) drop-shadow(0 0 20px #f472b6); }
+
+      100% { transform: scale(1) rotate(0deg); filter: brightness(1) hue-rotate(0deg); }
+
+    }
+
+    @keyframes cutinSlide {
+
+      0% { opacity: 0; transform: translate(-50%, -18px) scale(0.92); }
+
+      15% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+
+      85% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+
+      100% { opacity: 0; transform: translate(-50%, 12px) scale(0.95); }
+
+    }
+
+    @keyframes popFloat {
+
+      0% { opacity: 0; transform: translate(-50%, 8px) scale(0.85); }
+
+      20% { opacity: 1; transform: translate(-50%, -6px) scale(1.05); }
+
+      80% { opacity: 1; transform: translate(-50%, -18px) scale(1); }
+
+      100% { opacity: 0; transform: translate(-50%, -28px) scale(0.95); }
+
+    }
+
+
+
+    /* Continuous Status Aura Animations */
+
+    @keyframes statusBurn {
+
+      0%, 100% { filter: drop-shadow(0 0 6px rgba(249, 115, 22, 0.75)); }
+
+      50% { filter: drop-shadow(0 0 14px rgba(239, 68, 68, 0.95)) sepia(0.35); }
+
+    }
+
+    @keyframes statusPar {
+
+      0%, 100% { transform: translateX(0); filter: drop-shadow(0 0 6px rgba(234, 179, 8, 0.75)); }
+
+      48% { transform: translateX(0); }
+
+      50% { transform: translateX(-3px); filter: drop-shadow(0 0 14px rgba(250, 204, 21, 1)); }
+
+      52% { transform: translateX(3px); }
+
+      54% { transform: translateX(0); }
+
+    }
+
+    @keyframes statusPsn {
+
+      0%, 100% { filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.75)); }
+
+      50% { filter: drop-shadow(0 0 14px rgba(192, 132, 252, 0.95)) hue-rotate(35deg); }
+
+    }
+
+    @keyframes statusFrz {
+
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.9)) brightness(1.15) saturate(1.4); }
+
+      50% { filter: drop-shadow(0 0 14px rgba(125, 211, 252, 1)) brightness(1.3); }
+
+    }
+
+    @keyframes statusSlp {
+
+      0%, 100% { transform: translateY(0) rotate(-3deg); opacity: 0.88; }
+
+      50% { transform: translateY(3px) rotate(3deg); opacity: 1; }
+
+    }
+
+
+
+    .anim-idle { animation: floatMon 2.8s ease-in-out infinite; }
+
+    .anim-hit { animation: hitShake 0.55s ease-in-out; }
+
+    .anim-lunge { animation: attackLunge 0.5s ease-out; }
+
+    .anim-faint { animation: faintDrop 0.65s forwards ease-in; }
+
+    .anim-sendout { animation: sendOutPop 0.6s ease-out; }
+
+    .anim-mega { animation: megaBurst 0.9s ease-out; }
+
+    .anim-cutin { animation: cutinSlide 1.5s ease-in-out forwards; }
+
+    .anim-popup { animation: popFloat 1.35s ease-out forwards; }
+
+
+
+    .aura-brn { animation: statusBurn 1.8s ease-in-out infinite; }
+
+    .aura-par { animation: statusPar 2.1s ease-in-out infinite; }
+
+    .aura-psn { animation: statusPsn 2s ease-in-out infinite; }
+
+    .aura-frz { animation: statusFrz 2.2s ease-in-out infinite; }
+
+    .aura-slp { animation: statusSlp 2.5s ease-in-out infinite; }
+
+
+
+    .arena-bg {
+
+      background:
+
+        radial-gradient(ellipse at 72% 26%, rgba(56, 189, 248, 0.14) 0%, transparent 55%),
+
+        radial-gradient(ellipse at 28% 76%, rgba(16, 185, 129, 0.14) 0%, transparent 55%),
+
+        linear-gradient(180deg, #0b1324 0%, #131f38 48%, #0f1a2e 100%);
+
+    }
+
+    .arena-platform-foe {
+
+      background: radial-gradient(ellipse at center, rgba(56, 189, 248, 0.22) 0%, rgba(15, 23, 42, 0.04) 70%);
+
+      border: 1px solid rgba(56, 189, 248, 0.25);
+
+    }
+
+    .arena-platform-ally {
+
+      background: radial-gradient(ellipse at center, rgba(16, 185, 129, 0.22) 0%, rgba(15, 23, 42, 0.04) 70%);
+
+      border: 1px solid rgba(16, 185, 129, 0.25);
+
+    }
+
+
+
+    /* 4-Pokéball Team Indicators */
+
+    .pokeball-dot {
+
+      width: 16px;
+
+      height: 16px;
+
+      border-radius: 50%;
+
+      position: relative;
+
+      overflow: hidden;
+
+      transition: all 0.25s ease;
+
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.65);
+
+    }
+
+    .pokeball-healthy {
+
+      background: linear-gradient(180deg, #ef4444 0%, #ef4444 46%, #1e293b 46%, #1e293b 54%, #f8fafc 54%, #f8fafc 100%);
+
+      border: 1.5px solid #cbd5e1;
+
+    }
+
+    .pokeball-healthy::after {
+
+      content: '';
+
+      position: absolute;
+
+      top: 50%; left: 50%;
+
+      width: 5px; height: 5px;
+
+      background: #f8fafc;
+
+      border: 1.5px solid #1e293b;
+
+      border-radius: 50%;
+
+      transform: translate(-50%, -50%);
+
+    }
+
+    .pokeball-hidden {
+
+      background: linear-gradient(180deg, #6366f1 0%, #4f46e5 46%, #0f172a 46%, #0f172a 54%, #cbd5e1 54%, #94a3b8 100%);
+
+      border: 1.5px solid #818cf8;
+
+    }
+
+    .pokeball-hidden::after {
+
+      content: '?';
+
+      position: absolute;
+
+      inset: 0;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      font-size: 9px;
+
+      font-weight: 900;
+
+      color: #ffffff;
+
+      text-shadow: 0 1px 2px #000;
+
+    }
+
+    .pokeball-fainted {
+
+      background: #1e293b;
+
+      border: 1.5px solid #475569;
+
+      opacity: 0.45;
+
+    }
+
+    .pokeball-fainted::after {
+
+      content: '×';
+
+      position: absolute;
+
+      inset: 0;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      font-size: 11px;
+
+      font-weight: 800;
+
+      color: #94a3b8;
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="tablet-bezel">
+
+    <div id="app" class="tablet-screen"></div>
+
+  </div>
+
+
+
+  <script>
+
+    /**
+
+     * ============================================================================
+
+     * BATTLE FACTORY — REG M-C DOUBLES (對戰工廠 雙打對戰)
+
+     * Complete Single-File Competitive Doubles Simulator
+
+     *
+
+     * Fixes & Guarantees:
+
+     * - Fixed PokeAPI sprite IDs for Calyrex-Shadow (10194) and Calyrex-Ice (10193).
+
+     * - Fainted Pokémon skip their queued actions mid-turn and stay off the field
+
+     *   until the round completely finishes before replacements enter.
+
+     * - 100% reliable move selection, target selection (Foe 1, Foe 2, AND Partner Ally),
+
+     *   manual bench switching, pivot switching (Volt Switch / U-turn / Parting Shot /
+
+     *   Chilly Reception), and faint replacement prompts.
+
+     * - Relaxed default 1x pacing (~1600ms-1900ms per battle beat) with 2x toggle.
+
+     * - 165+ distinct Pokémon from Kanto through Paldea with species-accurate learnsets.
+
+     * - 32 functional battle items + species-exclusive Mega Stones (~45% chance)
+
+     *   with optional non-forced Mega Evolution toggle (`megaWant` always defaults false).
+
+     * ============================================================================
+
+     */
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 1. TYPE CHART & COLORS
+
+    // ----------------------------------------------------------------------------
+
+    const TYPES = [
+
+      'Normal','Fire','Water','Electric','Grass','Ice','Fighting','Poison',
+
+      'Ground','Flying','Psychic','Bug','Rock','Ghost','Dragon','Dark','Steel','Fairy'
+
+    ];
+
+
+
+    const TYPE_COLORS = {
+
+      Normal: '#94a3b8', Fire: '#f97316', Water: '#3b82f6', Electric: '#eab308',
+
+      Grass: '#22c55e', Ice: '#38bdf8', Fighting: '#dc2626', Poison: '#a855f7',
+
+      Ground: '#d97706', Flying: '#818cf8', Psychic: '#ec4899', Bug: '#84cc16',
+
+      Rock: '#b45309', Ghost: '#6366f1', Dragon: '#4f46e5', Dark: '#475569',
+
+      Steel: '#64748b', Fairy: '#f472b6'
+
+    };
+
+
+
+    const TYPE_CHART = {
+
+      Normal:   { Rock: 0.5, Ghost: 0, Steel: 0.5 },
+
+      Fire:     { Fire: 0.5, Water: 0.5, Grass: 2, Ice: 2, Bug: 2, Rock: 0.5, Dragon: 0.5, Steel: 2 },
+
+      Water:    { Fire: 2, Water: 0.5, Grass: 0.5, Ground: 2, Rock: 2, Dragon: 0.5 },
+
+      Electric: { Water: 2, Electric: 0.5, Grass: 0.5, Ground: 0, Flying: 2, Dragon: 0.5 },
+
+      Grass:    { Fire: 0.5, Water: 2, Grass: 0.5, Poison: 0.5, Ground: 2, Flying: 0.5, Bug: 0.5, Rock: 2, Dragon: 0.5, Steel: 0.5 },
+
+      Ice:      { Fire: 0.5, Water: 0.5, Grass: 2, Ice: 0.5, Ground: 2, Flying: 2, Dragon: 2, Steel: 0.5 },
+
+      Fighting: { Normal: 2, Ice: 2, Poison: 0.5, Flying: 0.5, Psychic: 0.5, Bug: 0.5, Rock: 2, Ghost: 0, Dark: 2, Steel: 2, Fairy: 0.5 },
+
+      Poison:   { Grass: 2, Poison: 0.5, Ground: 0.5, Rock: 0.5, Ghost: 0.5, Steel: 0, Fairy: 2 },
+
+      Ground:   { Fire: 2, Electric: 2, Grass: 0.5, Poison: 2, Flying: 0, Bug: 0.5, Rock: 2, Steel: 2 },
+
+      Flying:   { Electric: 0.5, Grass: 2, Fighting: 2, Bug: 2, Rock: 0.5, Steel: 0.5 },
+
+      Psychic:  { Fighting: 2, Poison: 2, Psychic: 0.5, Dark: 0, Steel: 0.5 },
+
+      Bug:      { Fire: 0.5, Grass: 2, Fighting: 0.5, Poison: 0.5, Flying: 0.5, Psychic: 2, Ghost: 0.5, Dark: 2, Steel: 0.5, Fairy: 0.5 },
+
+      Rock:     { Fire: 2, Ice: 2, Fighting: 0.5, Ground: 0.5, Flying: 2, Bug: 2, Steel: 0.5 },
+
+      Ghost:    { Normal: 0, Psychic: 2, Ghost: 2, Dark: 0.5 },
+
+      Dragon:   { Dragon: 2, Steel: 0.5, Fairy: 0 },
+
+      Dark:     { Fighting: 0.5, Psychic: 2, Ghost: 2, Dark: 0.5, Fairy: 0.5 },
+
+      Steel:    { Fire: 0.5, Water: 0.5, Electric: 0.5, Ice: 2, Rock: 2, Steel: 0.5, Fairy: 2 },
+
+      Fairy:    { Fire: 0.5, Fighting: 2, Poison: 0.5, Dragon: 2, Dark: 2, Steel: 0.5 }
+
+    };
+
+
+
+    function getTypeEffectiveness(moveType, defTypes) {
+
+      let mult = 1;
+
+      for (const dt of defTypes) {
+
+        const mod = TYPE_CHART[moveType]?.[dt];
+
+        if (mod !== undefined) mult *= mod;
+
+      }
+
+      return mult;
+
+    }
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 2. MEGA EVOLUTION DATA TABLE (Species-Exclusive Mega Stones)
+
+    // ----------------------------------------------------------------------------
+
+    const MEGA_FORMS = {
+
+      'Venusaur':   { stone: 'Venusaurite',    megaName: 'Mega Venusaur',    megaId: 10033, types: ['Grass', 'Poison'],   stats: [80, 100, 123, 122, 120, 80],  ability: 'Thick Fat' },
+
+      'Charizard':  { stone: 'Charizardite Y', megaName: 'Mega Charizard Y', megaId: 10035, types: ['Fire', 'Flying'],    stats: [78, 104, 78, 159, 115, 100],  ability: 'Drought' },
+
+      'Blastoise':  { stone: 'Blastoisinite',  megaName: 'Mega Blastoise',   megaId: 10036, types: ['Water'],             stats: [79, 103, 120, 135, 115, 78],  ability: 'Mega Launcher' },
+
+      'Alakazam':   { stone: 'Alakazite',      megaName: 'Mega Alakazam',    megaId: 10037, types: ['Psychic'],           stats: [55, 50, 65, 175, 105, 150],   ability: 'Trace' },
+
+      'Gengar':     { stone: 'Gengarite',      megaName: 'Mega Gengar',      megaId: 10038, types: ['Ghost', 'Poison'],   stats: [60, 65, 80, 170, 95, 130],    ability: 'Shadow Tag' },
+
+      'Kangaskhan': { stone: 'Kangaskhanite',  megaName: 'Mega Kangaskhan',  megaId: 10039, types: ['Normal'],            stats: [105, 125, 100, 60, 100, 100], ability: 'Parental Bond' },
+
+      'Pinsir':     { stone: 'Pinsirite',      megaName: 'Mega Pinsir',      megaId: 10040, types: ['Bug', 'Flying'],     stats: [65, 155, 120, 65, 90, 105],   ability: 'Aerilate' },
+
+      'Gyarados':   { stone: 'Gyaradosite',    megaName: 'Mega Gyarados',    megaId: 10041, types: ['Water', 'Dark'],     stats: [95, 155, 109, 70, 130, 81],   ability: 'Mold Breaker' },
+
+      'Aerodactyl': { stone: 'Aerodactylite',  megaName: 'Mega Aerodactyl',  megaId: 10042, types: ['Rock', 'Flying'],    stats: [80, 135, 85, 70, 95, 150],    ability: 'Tough Claws' },
+
+      'Ampharos':   { stone: 'Ampharosite',    megaName: 'Mega Ampharos',    megaId: 10045, types: ['Electric', 'Dragon'],stats: [90, 95, 105, 165, 110, 45],   ability: 'Mold Breaker' },
+
+      'Scizor':     { stone: 'Scizorite',      megaName: 'Mega Scizor',      megaId: 10046, types: ['Bug', 'Steel'],      stats: [70, 150, 140, 65, 100, 75],   ability: 'Technician' },
+
+      'Houndoom':   { stone: 'Houndoominite',  megaName: 'Mega Houndoom',    megaId: 10048, types: ['Dark', 'Fire'],      stats: [75, 90, 90, 140, 90, 115],    ability: 'Solar Power' },
+
+      'Tyranitar':  { stone: 'Tyranitarite',   megaName: 'Mega Tyranitar',   megaId: 10049, types: ['Rock', 'Dark'],      stats: [100, 164, 150, 95, 120, 71],  ability: 'Sand Stream' },
+
+      'Blaziken':   { stone: 'Blazikenite',    megaName: 'Mega Blaziken',    megaId: 10050, types: ['Fire', 'Fighting'],  stats: [80, 160, 80, 130, 80, 100],   ability: 'Speed Boost' },
+
+      'Gardevoir':  { stone: 'Gardevoirite',   megaName: 'Mega Gardevoir',   megaId: 10051, types: ['Psychic', 'Fairy'],  stats: [68, 85, 65, 165, 135, 100],   ability: 'Pixilate' },
+
+      'Mawile':     { stone: 'Mawilite',       megaName: 'Mega Mawile',      megaId: 10052, types: ['Steel', 'Fairy'],    stats: [50, 105, 125, 55, 95, 50],    ability: 'Huge Power' },
+
+      'Aggron':     { stone: 'Aggronite',      megaName: 'Mega Aggron',      megaId: 10053, types: ['Steel'],             stats: [70, 140, 230, 60, 80, 50],    ability: 'Filter' },
+
+      'Manectric':  { stone: 'Manectite',      megaName: 'Mega Manectric',   megaId: 10055, types: ['Electric'],          stats: [70, 75, 80, 135, 80, 135],    ability: 'Intimidate' },
+
+      'Absol':      { stone: 'Absolite',       megaName: 'Mega Absol',       megaId: 10057, types: ['Dark'],              stats: [65, 150, 60, 115, 60, 115],   ability: 'Magic Bounce' },
+
+      'Garchomp':   { stone: 'Garchompite',    megaName: 'Mega Garchomp',    megaId: 10058, types: ['Dragon', 'Ground'],  stats: [108, 170, 115, 120, 95, 92],  ability: 'Sand Force' },
+
+      'Lucario':    { stone: 'Lucarionite',    megaName: 'Mega Lucario',     megaId: 10059, types: ['Fighting', 'Steel'], stats: [70, 145, 88, 140, 70, 112],   ability: 'Adaptability' },
+
+      'Swampert':   { stone: 'Swampertite',    megaName: 'Mega Swampert',    megaId: 10064, types: ['Water', 'Ground'],   stats: [100, 150, 110, 95, 110, 70],  ability: 'Swift Swim' },
+
+      'Sceptile':   { stone: 'Sceptilite',     megaName: 'Mega Sceptile',    megaId: 10065, types: ['Grass', 'Dragon'],   stats: [70, 110, 75, 145, 85, 145],   ability: 'Lightning Rod' },
+
+      'Sableye':    { stone: 'Sablenite',      megaName: 'Mega Sableye',     megaId: 10066, types: ['Ghost', 'Dark'],     stats: [50, 85, 125, 85, 115, 20],    ability: 'Magic Bounce' },
+
+      'Altaria':    { stone: 'Altarianite',    megaName: 'Mega Altaria',     megaId: 10067, types: ['Dragon', 'Fairy'],   stats: [75, 110, 110, 110, 105, 80],  ability: 'Pixilate' },
+
+      'Gallade':    { stone: 'Galladite',      megaName: 'Mega Gallade',     megaId: 10068, types: ['Psychic', 'Fighting'],stats: [68, 165, 95, 65, 115, 110],  ability: 'Inner Focus' },
+
+      'Metagross':  { stone: 'Metagrossite',   megaName: 'Mega Metagross',   megaId: 10076, types: ['Steel', 'Psychic'],  stats: [80, 145, 150, 105, 110, 110], ability: 'Tough Claws' },
+
+      'Lopunny':    { stone: 'Lopunnite',      megaName: 'Mega Lopunny',     megaId: 10088, types: ['Normal', 'Fighting'],stats: [65, 136, 94, 54, 96, 135],    ability: 'Scrappy' },
+
+      'Salamence':  { stone: 'Salamencite',    megaName: 'Mega Salamence',   megaId: 10089, types: ['Dragon', 'Flying'],  stats: [95, 145, 130, 120, 90, 120],  ability: 'Aerilate' },
+
+      'Raichu':     { stone: 'Raichunite Y',   megaName: 'Mega Raichu Y',    megaId: 10100, types: ['Electric', 'Psychic'],stats: [60, 85, 65, 145, 105, 135],  ability: 'Surge Surfer' }
+
+    };
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 3. MOVES DATABASE
+
+    // ----------------------------------------------------------------------------
+
+    // target: 'foe' | 'allFoes' | 'allOthers' | 'ally' | 'self' | 'field' | 'any'
+
+    const MOVES = {
+
+      // Spread Moves
+
+      'Astral Barrage': { type: 'Ghost', cat: 'Special', pow: 120, acc: 100, target: 'allFoes' },
+
+      'Glacial Lance': { type: 'Ice', cat: 'Physical', pow: 120, acc: 100, target: 'allFoes' },
+
+      'Bleakwind Storm': { type: 'Flying', cat: 'Special', pow: 100, acc: 80, target: 'allFoes', effect: { stat: 'spe', stage: -1, chance: 30 } },
+
+      'Wildbolt Storm': { type: 'Electric', cat: 'Special', pow: 100, acc: 80, target: 'allFoes', effect: { status: 'par', chance: 20 } },
+
+      'Sandsear Storm': { type: 'Ground', cat: 'Special', pow: 100, acc: 80, target: 'allFoes', effect: { status: 'brn', chance: 20 } },
+
+      'Springtide Storm': { type: 'Fairy', cat: 'Special', pow: 100, acc: 80, target: 'allFoes', effect: { stat: 'atk', stage: -1, chance: 30 } },
+
+      'Make It Rain': { type: 'Steel', cat: 'Special', pow: 120, acc: 100, target: 'allFoes', selfDrop: { stat: 'spa', stage: -1 } },
+
+      'Dazzling Gleam': { type: 'Fairy', cat: 'Special', pow: 80, acc: 100, target: 'allFoes' },
+
+      'Heat Wave': { type: 'Fire', cat: 'Special', pow: 95, acc: 90, target: 'allFoes', effect: { status: 'brn', chance: 10 } },
+
+      'Muddy Water': { type: 'Water', cat: 'Special', pow: 90, acc: 85, target: 'allFoes', effect: { stat: 'acc', stage: -1, chance: 30 } },
+
+      'Origin Pulse': { type: 'Water', cat: 'Special', pow: 110, acc: 85, target: 'allFoes' },
+
+      'Water Spout': { type: 'Water', cat: 'Special', pow: 150, acc: 100, target: 'allFoes', hpScale: true },
+
+      'Eruption': { type: 'Fire', cat: 'Special', pow: 150, acc: 100, target: 'allFoes', hpScale: true },
+
+      'Precipice Blades': { type: 'Ground', cat: 'Physical', pow: 120, acc: 85, target: 'allFoes' },
+
+      'Rock Slide': { type: 'Rock', cat: 'Physical', pow: 75, acc: 90, target: 'allFoes', flinch: 30 },
+
+      'Blizzard': { type: 'Ice', cat: 'Special', pow: 110, acc: 70, target: 'allFoes', effect: { status: 'frz', chance: 10 } },
+
+      'Icy Wind': { type: 'Ice', cat: 'Special', pow: 55, acc: 95, target: 'allFoes', effect: { stat: 'spe', stage: -1, chance: 100 } },
+
+      'Electroweb': { type: 'Electric', cat: 'Special', pow: 55, acc: 95, target: 'allFoes', effect: { stat: 'spe', stage: -1, chance: 100 } },
+
+      'Snarl': { type: 'Dark', cat: 'Special', pow: 55, acc: 95, target: 'allFoes', effect: { stat: 'spa', stage: -1, chance: 100 } },
+
+      'Breaking Swipe': { type: 'Dragon', cat: 'Physical', pow: 60, acc: 100, target: 'allFoes', effect: { stat: 'atk', stage: -1, chance: 100 } },
+
+      'Earthquake': { type: 'Ground', cat: 'Physical', pow: 100, acc: 100, target: 'allOthers' },
+
+      'Discharge': { type: 'Electric', cat: 'Special', pow: 80, acc: 100, target: 'allOthers', effect: { status: 'par', chance: 30 } },
+
+      'Hyper Voice': { type: 'Normal', cat: 'Special', pow: 90, acc: 100, target: 'allFoes', sound: true },
+
+      'Expanding Force': { type: 'Psychic', cat: 'Special', pow: 80, acc: 100, target: 'allFoes' },
+
+      'Matcha Gotcha': { type: 'Grass', cat: 'Special', pow: 80, acc: 90, target: 'allFoes', drain: 0.5, effect: { status: 'brn', chance: 20 } },
+
+      'Mortal Spin': { type: 'Poison', cat: 'Physical', pow: 30, acc: 100, target: 'allFoes', effect: { status: 'psn', chance: 100 } },
+
+      'Clanging Scales': { type: 'Dragon', cat: 'Special', pow: 110, acc: 100, target: 'allFoes', selfDrop: { stat: 'def', stage: -1 } },
+
+      'Fiery Wrath': { type: 'Dark', cat: 'Special', pow: 90, acc: 100, target: 'allFoes', flinch: 20 },
+
+
+
+      // Single Target High Power & Signature
+
+      'Collision Course': { type: 'Fighting', cat: 'Physical', pow: 100, acc: 100, target: 'foe', seBoost: true },
+
+      'Electro Drift': { type: 'Electric', cat: 'Special', pow: 100, acc: 100, target: 'foe', seBoost: true },
+
+      'Wicked Blow': { type: 'Dark', cat: 'Physical', pow: 75, acc: 100, target: 'foe', crit: true },
+
+      'Surging Strikes': { type: 'Water', cat: 'Physical', pow: 75, acc: 100, target: 'foe', crit: true },
+
+      'Ivy Cudgel': { type: 'Grass', cat: 'Physical', pow: 100, acc: 100, target: 'foe', highCrit: true },
+
+      'Kowtow Cleave': { type: 'Dark', cat: 'Physical', pow: 85, acc: 100, target: 'foe' },
+
+      'Glaive Rush': { type: 'Dragon', cat: 'Physical', pow: 120, acc: 100, target: 'foe' },
+
+      'Population Bomb': { type: 'Normal', cat: 'Physical', pow: 120, acc: 90, target: 'foe' },
+
+      'Tachyon Cutter': { type: 'Steel', cat: 'Special', pow: 100, acc: 100, target: 'foe' },
+
+      'Mighty Cleave': { type: 'Rock', cat: 'Physical', pow: 95, acc: 100, target: 'foe', bypassProtect: true },
+
+      'Thunderclap': { type: 'Electric', cat: 'Special', pow: 70, acc: 100, target: 'foe', priority: 1 },
+
+      'Sucker Punch': { type: 'Dark', cat: 'Physical', pow: 70, acc: 100, target: 'foe', priority: 1 },
+
+      'Grassy Glide': { type: 'Grass', cat: 'Physical', pow: 55, acc: 100, target: 'foe', priority: 1 },
+
+      'Extreme Speed': { type: 'Normal', cat: 'Physical', pow: 80, acc: 100, target: 'foe', priority: 2 },
+
+      'Aqua Jet': { type: 'Water', cat: 'Physical', pow: 40, acc: 100, target: 'foe', priority: 1 },
+
+      'Ice Shard': { type: 'Ice', cat: 'Physical', pow: 40, acc: 100, target: 'foe', priority: 1 },
+
+      'Bullet Punch': { type: 'Steel', cat: 'Physical', pow: 40, acc: 100, target: 'foe', priority: 1 },
+
+      'Jet Punch': { type: 'Water', cat: 'Physical', pow: 60, acc: 100, target: 'foe', priority: 1 },
+
+      'Shadow Sneak': { type: 'Ghost', cat: 'Physical', pow: 40, acc: 100, target: 'foe', priority: 1 },
+
+      'Mach Punch': { type: 'Fighting', cat: 'Physical', pow: 40, acc: 100, target: 'foe', priority: 1 },
+
+      'Vacuum Wave': { type: 'Fighting', cat: 'Special', pow: 40, acc: 100, target: 'foe', priority: 1 },
+
+      'Fake Out': { type: 'Normal', cat: 'Physical', pow: 40, acc: 100, target: 'foe', priority: 3, flinch: 100, firstTurnOnly: true },
+
+      'First Impression': { type: 'Bug', cat: 'Physical', pow: 90, acc: 100, target: 'foe', priority: 2, firstTurnOnly: true },
+
+
+
+      // Standard Competitive Coverage
+
+      'Close Combat': { type: 'Fighting', cat: 'Physical', pow: 120, acc: 100, target: 'foe', selfDrop: { stat: 'def', stage: -1 } },
+
+      'Drain Punch': { type: 'Fighting', cat: 'Physical', pow: 75, acc: 100, target: 'foe', drain: 0.5 },
+
+      'Sacred Sword': { type: 'Fighting', cat: 'Physical', pow: 90, acc: 100, target: 'foe' },
+
+      'Superpower': { type: 'Fighting', cat: 'Physical', pow: 120, acc: 100, target: 'foe', selfDrop: { stat: 'atk', stage: -1 } },
+
+      'Low Kick': { type: 'Fighting', cat: 'Physical', pow: 85, acc: 100, target: 'foe' },
+
+      'High Jump Kick': { type: 'Fighting', cat: 'Physical', pow: 130, acc: 90, target: 'foe' },
+
+      'Aura Sphere': { type: 'Fighting', cat: 'Special', pow: 80, acc: 100, target: 'foe' },
+
+      'Focus Blast': { type: 'Fighting', cat: 'Special', pow: 120, acc: 70, target: 'foe', effect: { stat: 'spd', stage: -1, chance: 10 } },
+
+      'Dynamic Punch': { type: 'Fighting', cat: 'Physical', pow: 100, acc: 50, target: 'foe', effect: { status: 'cnf', chance: 100 } },
+
+      'Flare Blitz': { type: 'Fire', cat: 'Physical', pow: 120, acc: 100, target: 'foe', recoil: 0.33 },
+
+      'Sacred Fire': { type: 'Fire', cat: 'Physical', pow: 100, acc: 95, target: 'foe', effect: { status: 'brn', chance: 50 } },
+
+      'Armor Cannon': { type: 'Fire', cat: 'Special', pow: 120, acc: 100, target: 'foe', selfDrop: { stat: 'spd', stage: -1 } },
+
+      'Flamethrower': { type: 'Fire', cat: 'Special', pow: 90, acc: 100, target: 'foe', effect: { status: 'brn', chance: 10 } },
+
+      'Overheat': { type: 'Fire', cat: 'Special', pow: 130, acc: 90, target: 'foe', selfDrop: { stat: 'spa', stage: -2 } },
+
+      'Bitter Blade': { type: 'Fire', cat: 'Physical', pow: 90, acc: 100, target: 'foe', drain: 0.5 },
+
+      'Torch Song': { type: 'Fire', cat: 'Special', pow: 80, acc: 100, target: 'foe', selfBoost: { stat: 'spa', stage: 1 } },
+
+      'Pyro Ball': { type: 'Fire', cat: 'Physical', pow: 120, acc: 90, target: 'foe', effect: { status: 'brn', chance: 10 } },
+
+      'Wave Crash': { type: 'Water', cat: 'Physical', pow: 120, acc: 100, target: 'foe', recoil: 0.33 },
+
+      'Waterfall': { type: 'Water', cat: 'Physical', pow: 80, acc: 100, target: 'foe', flinch: 20 },
+
+      'Liquidation': { type: 'Water', cat: 'Physical', pow: 85, acc: 100, target: 'foe', effect: { stat: 'def', stage: -1, chance: 20 } },
+
+      'Hydro Pump': { type: 'Water', cat: 'Special', pow: 110, acc: 80, target: 'foe' },
+
+      'Scald': { type: 'Water', cat: 'Special', pow: 80, acc: 100, target: 'foe', effect: { status: 'brn', chance: 30 } },
+
+      'Hydro Steam': { type: 'Water', cat: 'Special', pow: 80, acc: 100, target: 'foe' },
+
+      'Aqua Step': { type: 'Water', cat: 'Physical', pow: 80, acc: 100, target: 'foe', selfBoost: { stat: 'spe', stage: 1 } },
+
+      'Water Shuriken': { type: 'Water', cat: 'Special', pow: 75, acc: 100, target: 'foe', priority: 1 },
+
+      'Wood Hammer': { type: 'Grass', cat: 'Physical', pow: 120, acc: 100, target: 'foe', recoil: 0.33 },
+
+      'Horn Leech': { type: 'Grass', cat: 'Physical', pow: 75, acc: 100, target: 'foe', drain: 0.5 },
+
+      'Leaf Blade': { type: 'Grass', cat: 'Physical', pow: 90, acc: 100, target: 'foe', highCrit: true },
+
+      'Power Whip': { type: 'Grass', cat: 'Physical', pow: 120, acc: 85, target: 'foe' },
+
+      'Flower Trick': { type: 'Grass', cat: 'Physical', pow: 70, acc: 100, target: 'foe', crit: true },
+
+      'Leaf Storm': { type: 'Grass', cat: 'Special', pow: 130, acc: 90, target: 'foe', selfDrop: { stat: 'spa', stage: -2 } },
+
+      'Energy Ball': { type: 'Grass', cat: 'Special', pow: 90, acc: 100, target: 'foe' },
+
+      'Solar Beam': { type: 'Grass', cat: 'Special', pow: 120, acc: 100, target: 'foe' },
+
+      'Leech Life': { type: 'Bug', cat: 'Physical', pow: 80, acc: 100, target: 'foe', drain: 0.5 },
+
+      'Thunderbolt': { type: 'Electric', cat: 'Special', pow: 90, acc: 100, target: 'foe', effect: { status: 'par', chance: 10 } },
+
+      'Thunder': { type: 'Electric', cat: 'Special', pow: 110, acc: 70, target: 'foe', effect: { status: 'par', chance: 30 } },
+
+      'Wild Charge': { type: 'Electric', cat: 'Physical', pow: 90, acc: 100, target: 'foe', recoil: 0.25 },
+
+      'Volt Tackle': { type: 'Electric', cat: 'Physical', pow: 120, acc: 100, target: 'foe', recoil: 0.33 },
+
+      'Electro Shot': { type: 'Electric', cat: 'Special', pow: 130, acc: 100, target: 'foe' },
+
+      'Ice Beam': { type: 'Ice', cat: 'Special', pow: 90, acc: 100, target: 'foe', effect: { status: 'frz', chance: 10 } },
+
+      'Freeze-Dry': { type: 'Ice', cat: 'Special', pow: 70, acc: 100, target: 'foe', seWater: true },
+
+      'Icicle Crash': { type: 'Ice', cat: 'Physical', pow: 85, acc: 90, target: 'foe', flinch: 30 },
+
+      'Ice Spinner': { type: 'Ice', cat: 'Physical', pow: 80, acc: 100, target: 'foe' },
+
+      'Ice Punch': { type: 'Ice', cat: 'Physical', pow: 75, acc: 100, target: 'foe', effect: { status: 'frz', chance: 10 } },
+
+      'Ice Fang': { type: 'Ice', cat: 'Physical', pow: 65, acc: 95, target: 'foe', flinch: 10 },
+
+      'Moonblast': { type: 'Fairy', cat: 'Special', pow: 95, acc: 100, target: 'foe', effect: { stat: 'spa', stage: -1, chance: 30 } },
+
+      'Play Rough': { type: 'Fairy', cat: 'Physical', pow: 90, acc: 90, target: 'foe', effect: { stat: 'atk', stage: -1, chance: 10 } },
+
+      'Spirit Break': { type: 'Fairy', cat: 'Physical', pow: 75, acc: 100, target: 'foe', effect: { stat: 'spa', stage: -1, chance: 100 } },
+
+      'Shadow Ball': { type: 'Ghost', cat: 'Special', pow: 80, acc: 100, target: 'foe', effect: { stat: 'spd', stage: -1, chance: 20 } },
+
+      'Poltergeist': { type: 'Ghost', cat: 'Physical', pow: 110, acc: 90, target: 'foe' },
+
+      'Rage Fist': { type: 'Ghost', cat: 'Physical', pow: 100, acc: 100, target: 'foe' },
+
+      'Crunch': { type: 'Dark', cat: 'Physical', pow: 80, acc: 100, target: 'foe', effect: { stat: 'def', stage: -1, chance: 20 } },
+
+      'Knock Off': { type: 'Dark', cat: 'Physical', pow: 95, acc: 100, target: 'foe' },
+
+      'Dark Pulse': { type: 'Dark', cat: 'Special', pow: 80, acc: 100, target: 'foe', flinch: 20 },
+
+      'Foul Play': { type: 'Dark', cat: 'Physical', pow: 95, acc: 100, target: 'foe' },
+
+      'Draco Meteor': { type: 'Dragon', cat: 'Special', pow: 130, acc: 90, target: 'foe', selfDrop: { stat: 'spa', stage: -2 } },
+
+      'Dragon Claw': { type: 'Dragon', cat: 'Physical', pow: 80, acc: 100, target: 'foe' },
+
+      'Dragon Pulse': { type: 'Dragon', cat: 'Special', pow: 85, acc: 100, target: 'foe' },
+
+      'Dragon Darts': { type: 'Dragon', cat: 'Physical', pow: 100, acc: 100, target: 'foe' },
+
+      'Scale Shot': { type: 'Dragon', cat: 'Physical', pow: 100, acc: 90, target: 'foe' },
+
+      'Flash Cannon': { type: 'Steel', cat: 'Special', pow: 80, acc: 100, target: 'foe' },
+
+      'Heavy Slam': { type: 'Steel', cat: 'Physical', pow: 100, acc: 100, target: 'foe' },
+
+      'Iron Head': { type: 'Steel', cat: 'Physical', pow: 80, acc: 100, target: 'foe', flinch: 30 },
+
+      'Gigaton Hammer': { type: 'Steel', cat: 'Physical', pow: 140, acc: 100, target: 'foe' },
+
+      'Behemoth Blade': { type: 'Steel', cat: 'Physical', pow: 100, acc: 100, target: 'foe' },
+
+      'High Horsepower': { type: 'Ground', cat: 'Physical', pow: 95, acc: 95, target: 'foe' },
+
+      'Stomping Tantrum': { type: 'Ground', cat: 'Physical', pow: 75, acc: 100, target: 'foe' },
+
+      'Earth Power': { type: 'Ground', cat: 'Special', pow: 90, acc: 100, target: 'foe' },
+
+      'Headlong Rush': { type: 'Ground', cat: 'Physical', pow: 120, acc: 100, target: 'foe', selfDrop: { stat: 'def', stage: -1 } },
+
+      'Brave Bird': { type: 'Flying', cat: 'Physical', pow: 120, acc: 100, target: 'foe', recoil: 0.33 },
+
+      'Acrobatics': { type: 'Flying', cat: 'Physical', pow: 110, acc: 100, target: 'foe' },
+
+      'Hurricane': { type: 'Flying', cat: 'Special', pow: 110, acc: 70, target: 'foe', effect: { status: 'cnf', chance: 30 } },
+
+      'Air Slash': { type: 'Flying', cat: 'Special', pow: 75, acc: 95, target: 'foe', flinch: 30 },
+
+      'Psychic': { type: 'Psychic', cat: 'Special', pow: 90, acc: 100, target: 'foe', effect: { stat: 'spd', stage: -1, chance: 10 } },
+
+      'Psyshock': { type: 'Psychic', cat: 'Special', pow: 80, acc: 100, target: 'foe' },
+
+      'Psycho Cut': { type: 'Psychic', cat: 'Physical', pow: 70, acc: 100, target: 'foe', highCrit: true },
+
+      'Lumina Crash': { type: 'Psychic', cat: 'Special', pow: 80, acc: 100, target: 'foe', effect: { stat: 'spd', stage: -2, chance: 100 } },
+
+      'Sludge Bomb': { type: 'Poison', cat: 'Special', pow: 90, acc: 100, target: 'foe', effect: { status: 'psn', chance: 30 } },
+
+      'Gunk Shot': { type: 'Poison', cat: 'Physical', pow: 120, acc: 80, target: 'foe', effect: { status: 'psn', chance: 30 } },
+
+      'Dire Claw': { type: 'Poison', cat: 'Physical', pow: 80, acc: 100, target: 'foe', effect: { status: 'par', chance: 50 } },
+
+      'Malignant Chain': { type: 'Poison', cat: 'Special', pow: 100, acc: 100, target: 'foe', effect: { status: 'psn', chance: 50 } },
+
+      'U-turn': { type: 'Bug', cat: 'Physical', pow: 70, acc: 100, target: 'foe', pivot: true },
+
+      'Volt Switch': { type: 'Electric', cat: 'Special', pow: 70, acc: 100, target: 'foe', pivot: true },
+
+      'Flip Turn': { type: 'Water', cat: 'Physical', pow: 60, acc: 100, target: 'foe', pivot: true },
+
+      'Bug Buzz': { type: 'Bug', cat: 'Special', pow: 90, acc: 100, target: 'foe' },
+
+      'X-Scissor': { type: 'Bug', cat: 'Physical', pow: 80, acc: 100, target: 'foe' },
+
+      'Stone Edge': { type: 'Rock', cat: 'Physical', pow: 100, acc: 80, target: 'foe', highCrit: true },
+
+      'Power Gem': { type: 'Rock', cat: 'Special', pow: 80, acc: 100, target: 'foe' },
+
+      'Salt Cure': { type: 'Rock', cat: 'Physical', pow: 40, acc: 100, target: 'foe', effect: { status: 'psn', chance: 100 } },
+
+      'Body Press': { type: 'Fighting', cat: 'Physical', pow: 80, acc: 100, target: 'foe', useDef: true },
+
+      'Facade': { type: 'Normal', cat: 'Physical', pow: 70, acc: 100, target: 'foe', facadeBoost: true },
+
+      'Body Slam': { type: 'Normal', cat: 'Physical', pow: 85, acc: 100, target: 'foe', effect: { status: 'par', chance: 30 } },
+
+      'Double-Edge': { type: 'Normal', cat: 'Physical', pow: 120, acc: 100, target: 'foe', recoil: 0.33 },
+
+      'Blood Moon': { type: 'Normal', cat: 'Special', pow: 140, acc: 100, target: 'foe' },
+
+      'Tri Attack': { type: 'Normal', cat: 'Special', pow: 80, acc: 100, target: 'foe', effect: { status: 'par', chance: 20 } },
+
+
+
+      // Status, Support, Speed Control & Ally Moves
+
+      'Protect': { type: 'Normal', cat: 'Status', pow: 0, acc: 100, target: 'self', priority: 4, protect: true },
+
+      'Spiky Shield': { type: 'Grass', cat: 'Status', pow: 0, acc: 100, target: 'self', priority: 4, protect: true },
+
+      'King\'s Shield': { type: 'Steel', cat: 'Status', pow: 0, acc: 100, target: 'self', priority: 4, protect: true },
+
+      'Burning Bulwark': { type: 'Fire', cat: 'Status', pow: 0, acc: 100, target: 'self', priority: 4, protect: true },
+
+      'Tailwind': { type: 'Flying', cat: 'Status', pow: 0, acc: 100, target: 'field', tailwind: true },
+
+      'Trick Room': { type: 'Psychic', cat: 'Status', pow: 0, acc: 100, target: 'field', priority: -7, trickRoom: true },
+
+      'Parting Shot': { type: 'Dark', cat: 'Status', pow: 0, acc: 100, target: 'foe', dropDual: true, pivot: true },
+
+      'Chilly Reception': { type: 'Ice', cat: 'Status', pow: 0, acc: 100, target: 'self', weather: 'Snow', pivot: true },
+
+      'Spore': { type: 'Grass', cat: 'Status', pow: 0, acc: 100, target: 'foe', status: 'slp' },
+
+      'Sleep Powder': { type: 'Grass', cat: 'Status', pow: 0, acc: 75, target: 'foe', status: 'slp' },
+
+      'Will-O-Wisp': { type: 'Fire', cat: 'Status', pow: 0, acc: 85, target: 'foe', status: 'brn' },
+
+      'Thunder Wave': { type: 'Electric', cat: 'Status', pow: 0, acc: 90, target: 'foe', status: 'par' },
+
+      'Taunt': { type: 'Dark', cat: 'Status', pow: 0, acc: 100, target: 'foe', taunt: true },
+
+      'Encore': { type: 'Normal', cat: 'Status', pow: 0, acc: 100, target: 'foe', encore: true },
+
+      'Follow Me': { type: 'Normal', cat: 'Status', pow: 0, acc: 100, target: 'self', priority: 2, redirect: true },
+
+      'Rage Powder': { type: 'Bug', cat: 'Status', pow: 0, acc: 100, target: 'self', priority: 2, redirect: true },
+
+      'Helping Hand': { type: 'Normal', cat: 'Status', pow: 0, acc: 100, target: 'ally', priority: 5, helpingHand: true },
+
+      'Pollen Puff': { type: 'Bug', cat: 'Special', pow: 90, acc: 100, target: 'any', pollenPuff: true },
+
+      'Life Dew': { type: 'Water', cat: 'Status', pow: 0, acc: 100, target: 'field', teamHeal: 0.25 },
+
+      'Nasty Plot': { type: 'Dark', cat: 'Status', pow: 0, acc: 100, target: 'self', boost: { spa: 2 } },
+
+      'Swords Dance': { type: 'Normal', cat: 'Status', pow: 0, acc: 100, target: 'self', boost: { atk: 2 } },
+
+      'Calm Mind': { type: 'Psychic', cat: 'Status', pow: 0, acc: 100, target: 'self', boost: { spa: 1, spd: 1 } },
+
+      'Bulk Up': { type: 'Fighting', cat: 'Status', pow: 0, acc: 100, target: 'self', boost: { atk: 1, def: 1 } },
+
+      'Dragon Dance': { type: 'Dragon', cat: 'Status', pow: 0, acc: 100, target: 'self', boost: { atk: 1, spe: 1 } },
+
+      'Iron Defense': { type: 'Steel', cat: 'Status', pow: 0, acc: 100, target: 'self', boost: { def: 2 } },
+
+      'Recover': { type: 'Normal', cat: 'Status', pow: 0, acc: 100, target: 'self', heal: 0.5 },
+
+      'Roost': { type: 'Flying', cat: 'Status', pow: 0, acc: 100, target: 'self', heal: 0.5 },
+
+      'Slack Off': { type: 'Normal', cat: 'Status', pow: 0, acc: 100, target: 'self', heal: 0.5 },
+
+      'Aurora Veil': { type: 'Ice', cat: 'Status', pow: 0, acc: 100, target: 'field', screens: true },
+
+      'Light Screen': { type: 'Psychic', cat: 'Status', pow: 0, acc: 100, target: 'field', screens: true },
+
+      'Reflect': { type: 'Psychic', cat: 'Status', pow: 0, acc: 100, target: 'field', screens: true }
+
+    };
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 4. 165+ DISTINCT REG M-C SPECIES ROSTER (Species-Accurate Learnsets)
+
+    // ----------------------------------------------------------------------------
+
+    const RAW_POKEDEX = [
+
+      // Mega-Capable Base Species (~45% chance to hold matching Mega Stone; 100% optional toggle)
+
+      { name: 'Venusaur', id: 3, types: ['Grass','Poison'], stats: [80,82,83,100,100,80], ability: 'Chlorophyll', learnset: ['Leaf Storm','Sludge Bomb','Earth Power','Sleep Powder','Protect'] },
+
+      { name: 'Charizard', id: 6, types: ['Fire','Flying'], stats: [78,84,78,109,85,100], ability: 'Solar Power', learnset: ['Heat Wave','Overheat','Air Slash','Solar Beam','Tailwind','Protect'] },
+
+      { name: 'Blastoise', id: 9, types: ['Water'], stats: [79,83,100,85,105,78], ability: 'Torrent', learnset: ['Water Spout','Hydro Pump','Ice Beam','Fake Out','Dark Pulse','Protect'] },
+
+      { name: 'Alakazam', id: 65, types: ['Psychic'], stats: [55,50,45,135,95,120], ability: 'Magic Guard', learnset: ['Expanding Force','Psychic','Dazzling Gleam','Shadow Ball','Encore','Protect'] },
+
+      { name: 'Gengar', id: 94, types: ['Ghost','Poison'], stats: [60,65,60,130,75,110], ability: 'Cursed Body', learnset: ['Shadow Ball','Sludge Bomb','Icy Wind','Will-O-Wisp','Taunt','Protect'] },
+
+      { name: 'Kangaskhan', id: 115, types: ['Normal'], stats: [105,95,80,40,80,90], ability: 'Scrappy', learnset: ['Fake Out','Double-Edge','Sucker Punch','Drain Punch','Protect'] },
+
+      { name: 'Pinsir', id: 127, types: ['Bug'], stats: [65,125,100,55,70,85], ability: 'Hyper Cutter', learnset: ['Double-Edge','Close Combat','X-Scissor','Swords Dance','Protect'] },
+
+      { name: 'Gyarados', id: 130, types: ['Water','Flying'], stats: [95,125,79,60,100,81], ability: 'Intimidate', learnset: ['Waterfall','Crunch','Earthquake','Dragon Dance','Ice Fang','Thunder Wave','Protect'] },
+
+      { name: 'Aerodactyl', id: 142, types: ['Rock','Flying'], stats: [80,105,65,60,75,130], ability: 'Unnerve', learnset: ['Rock Slide','Brave Bird','Tailwind','Taunt','Protect'] },
+
+      { name: 'Ampharos', id: 181, types: ['Electric'], stats: [90,75,85,115,90,55], ability: 'Static', learnset: ['Thunderbolt','Dazzling Gleam','Volt Switch','Dragon Pulse','Protect'] },
+
+      { name: 'Scizor', id: 212, types: ['Bug','Steel'], stats: [70,130,100,55,80,65], ability: 'Technician', learnset: ['Bullet Punch','U-turn','Close Combat','Swords Dance','Protect'] },
+
+      { name: 'Houndoom', id: 229, types: ['Dark','Fire'], stats: [75,90,50,110,80,95], ability: 'Flash Fire', learnset: ['Heat Wave','Dark Pulse','Snarl','Nasty Plot','Protect'] },
+
+      { name: 'Tyranitar', id: 248, types: ['Rock','Dark'], stats: [100,134,110,95,100,61], ability: 'Sand Stream', learnset: ['Rock Slide','Knock Off','Low Kick','Dragon Dance','Protect'] },
+
+      { name: 'Sceptile', id: 254, types: ['Grass'], stats: [70,85,65,105,85,120], ability: 'Overgrow', learnset: ['Leaf Storm','Energy Ball','Dragon Pulse','Focus Blast','Protect'] },
+
+      { name: 'Blaziken', id: 257, types: ['Fire','Fighting'], stats: [80,120,70,110,70,80], ability: 'Speed Boost', learnset: ['Flare Blitz','Close Combat','Swords Dance','Knock Off','Protect'] },
+
+      { name: 'Swampert', id: 260, types: ['Water','Ground'], stats: [100,110,90,85,90,60], ability: 'Torrent', learnset: ['Liquidation','High Horsepower','Ice Punch','Flip Turn','Protect'] },
+
+      { name: 'Gardevoir', id: 282, types: ['Psychic','Fairy'], stats: [68,65,65,125,115,80], ability: 'Telepathy', learnset: ['Hyper Voice','Expanding Force','Moonblast','Trick Room','Protect'] },
+
+      { name: 'Sableye', id: 302, types: ['Ghost','Dark'], stats: [50,75,75,65,65,50], ability: 'Prankster', learnset: ['Fake Out','Foul Play','Will-O-Wisp','Encore','Protect'] },
+
+      { name: 'Mawile', id: 303, types: ['Steel','Fairy'], stats: [50,85,85,55,55,50], ability: 'Intimidate', learnset: ['Play Rough','Iron Head','Sucker Punch','Swords Dance','Protect'] },
+
+      { name: 'Aggron', id: 306, types: ['Steel','Rock'], stats: [70,110,180,60,60,50], ability: 'Sturdy', learnset: ['Heavy Slam','Rock Slide','Body Press','High Horsepower','Protect'] },
+
+      { name: 'Manectric', id: 310, types: ['Electric'], stats: [70,75,60,105,60,105], ability: 'Lightning Rod', learnset: ['Thunderbolt','Volt Switch','Overheat','Snarl','Protect'] },
+
+      { name: 'Altaria', id: 334, types: ['Dragon','Flying'], stats: [75,70,90,70,105,80], ability: 'Natural Cure', learnset: ['Hyper Voice','Draco Meteor','Tailwind','Roost','Protect'] },
+
+      { name: 'Absol', id: 359, types: ['Dark'], stats: [65,130,60,75,60,75], ability: 'Super Luck', learnset: ['Knock Off','Sucker Punch','Play Rough','Close Combat','Protect'] },
+
+      { name: 'Salamence', id: 373, types: ['Dragon','Flying'], stats: [95,135,80,110,80,100], ability: 'Intimidate', learnset: ['Draco Meteor','Hyper Voice','Heat Wave','Tailwind','Dragon Claw','Protect'] },
+
+      { name: 'Metagross', id: 376, types: ['Steel','Psychic'], stats: [80,135,130,95,90,70], ability: 'Clear Body', learnset: ['Iron Head','Heavy Slam','Psychic','Bullet Punch','Stomping Tantrum','Protect'] },
+
+      { name: 'Lopunny', id: 428, types: ['Normal'], stats: [65,76,84,54,96,105], ability: 'Limber', learnset: ['Fake Out','Close Combat','U-turn','Encore','Protect'] },
+
+      { name: 'Garchomp', id: 445, types: ['Dragon','Ground'], stats: [108,130,95,80,85,102], ability: 'Rough Skin', learnset: ['Earthquake','Dragon Claw','Rock Slide','Stomping Tantrum','Swords Dance','Protect'] },
+
+      { name: 'Lucario', id: 448, types: ['Fighting','Steel'], stats: [70,110,70,115,70,90], ability: 'Inner Focus', learnset: ['Close Combat','Bullet Punch','Flash Cannon','Extreme Speed','Follow Me','Protect'] },
+
+      { name: 'Gallade', id: 475, types: ['Psychic','Fighting'], stats: [68,125,65,65,115,80], ability: 'Sharpness', learnset: ['Sacred Sword','Psycho Cut','Trick Room','Leaf Blade','Protect'] },
+
+      { name: 'Raichu', id: 26, types: ['Electric'], stats: [60,90,55,90,80,110], ability: 'Lightning Rod', learnset: ['Fake Out','Thunderbolt','Volt Switch','Nasty Plot','Encore','Helping Hand','Protect'] },
+
+
+
+      // Classic Kanto / Johto / Hoenn / Sinnoh / Unova / Kalos / Alola / Galar / Paldea Icons
+
+      { name: 'Pikachu', id: 25, types: ['Electric'], stats: [35,55,40,50,50,90], ability: 'Lightning Rod', learnset: ['Fake Out','Volt Tackle','Thunderbolt','Volt Switch','Protect'] },
+
+      { name: 'Machamp', id: 68, types: ['Fighting'], stats: [90,130,80,65,85,55], ability: 'Guts', learnset: ['Close Combat','Dynamic Punch','Bullet Punch','Knock Off','Protect'] },
+
+      { name: 'Lapras', id: 131, types: ['Water','Ice'], stats: [130,85,80,85,95,60], ability: 'Water Absorb', learnset: ['Freeze-Dry','Hydro Pump','Ice Shard','Life Dew','Protect'] },
+
+      { name: 'Mew', id: 151, types: ['Psychic'], stats: [100,100,100,100,100,100], ability: 'Synchronize', learnset: ['Fake Out','Pollen Puff','Tailwind','Trick Room','Will-O-Wisp','Protect'] },
+
+      { name: 'Greninja', id: 658, types: ['Water','Dark'], stats: [72,95,67,103,71,122], ability: 'Protean', learnset: ['Hydro Pump','Dark Pulse','Ice Beam','Water Shuriken','Protect'] },
+
+      { name: 'Cinderace', id: 815, types: ['Fire'], stats: [80,116,75,65,75,119], ability: 'Libero', learnset: ['Pyro Ball','High Jump Kick','U-turn','Sucker Punch','Protect'] },
+
+
+
+      // Restricted & Mythical Staples (Fixed Calyrex-Shadow 10194 & Calyrex-Ice 10193 sprite IDs)
+
+      { name: 'Calyrex-Shadow', id: 10194, types: ['Psychic','Ghost'], stats: [100,85,80,165,100,150], ability: 'As One (Spectrier)', learnset: ['Astral Barrage','Expanding Force','Psychic','Shadow Ball','Pollen Puff','Nasty Plot','Protect'] },
+
+      { name: 'Calyrex-Ice', id: 10193, types: ['Psychic','Ice'], stats: [100,165,150,85,130,50], ability: 'As One (Glastrier)', learnset: ['Glacial Lance','High Horsepower','Close Combat','Trick Room','Swords Dance','Protect'] },
+
+      { name: 'Miraidon', id: 1008, types: ['Electric','Dragon'], stats: [100,85,100,135,115,135], ability: 'Hadron Engine', learnset: ['Electro Drift','Draco Meteor','Dazzling Gleam','Volt Switch','Discharge','Protect'] },
+
+      { name: 'Koraidon', id: 1007, types: ['Fighting','Dragon'], stats: [100,135,115,85,100,135], ability: 'Orichalcum Pulse', learnset: ['Collision Course','Flare Blitz','Dragon Claw','U-turn','Breaking Swipe','Protect'] },
+
+      { name: 'Kyogre', id: 382, types: ['Water'], stats: [100,100,90,150,140,90], ability: 'Drizzle', learnset: ['Water Spout','Origin Pulse','Ice Beam','Thunderbolt','Hydro Pump','Protect'] },
+
+      { name: 'Groudon', id: 383, types: ['Ground'], stats: [100,150,140,100,90,90], ability: 'Drought', learnset: ['Precipice Blades','Heat Wave','Rock Slide','Swords Dance','Thunder Wave','Protect'] },
+
+      { name: 'Zacian-Crowned', id: 10188, types: ['Fairy','Steel'], stats: [92,150,115,80,115,148], ability: 'Intrepid Sword', itemLock: 'Rusted Sword', learnset: ['Behemoth Blade','Play Rough','Sacred Sword','Swords Dance','Protect'] },
+
+      { name: 'Zamazenta-Crowned', id: 10189, types: ['Fighting','Steel'], stats: [92,120,140,80,140,128], ability: 'Dauntless Shield', itemLock: 'Rusted Shield', learnset: ['Body Press','Heavy Slam','Iron Defense','Snarl','Protect'] },
+
+      { name: 'Terapagos', id: 1024, types: ['Normal'], stats: [160,105,110,130,110,85], ability: 'Tera Shift', learnset: ['Hyper Voice','Earth Power','Calm Mind','Dazzling Gleam','Protect'] },
+
+      { name: 'Eternatus', id: 890, types: ['Poison','Dragon'], stats: [140,85,95,145,95,130], ability: 'Pressure', learnset: ['Sludge Bomb','Draco Meteor','Flamethrower','Recover','Protect'] },
+
+      { name: 'Lunala', id: 792, types: ['Psychic','Ghost'], stats: [137,113,89,137,107,97], ability: 'Shadow Shield', learnset: ['Moonblast','Shadow Ball','Expanding Force','Trick Room','Tailwind','Protect'] },
+
+      { name: 'Solgaleo', id: 791, types: ['Psychic','Steel'], stats: [137,137,107,113,89,97], ability: 'Full Metal Body', learnset: ['Heavy Slam','Psychic','Close Combat','Flare Blitz','Trick Room','Protect'] },
+
+      { name: 'Necrozma-Dusk-Mane', id: 10155, types: ['Psychic','Steel'], stats: [97,157,127,113,109,77], ability: 'Prism Armor', learnset: ['Heavy Slam','Earthquake','Trick Room','Swords Dance','Protect'] },
+
+      { name: 'Necrozma-Dawn-Wings', id: 10156, types: ['Psychic','Ghost'], stats: [97,113,109,157,127,77], ability: 'Prism Armor', learnset: ['Expanding Force','Shadow Ball','Moonblast','Trick Room','Protect'] },
+
+      { name: 'Rayquaza', id: 384, types: ['Dragon','Flying'], stats: [105,150,90,150,90,95], ability: 'Air Lock', learnset: ['Dragon Claw','Brave Bird','Extreme Speed','Swords Dance','Protect'] },
+
+      { name: 'Dialga', id: 483, types: ['Steel','Dragon'], stats: [100,120,120,150,100,90], ability: 'Telepathy', learnset: ['Flash Cannon','Draco Meteor','Earth Power','Trick Room','Protect'] },
+
+      { name: 'Palkia', id: 484, types: ['Water','Dragon'], stats: [90,120,100,150,120,100], ability: 'Telepathy', learnset: ['Hydro Pump','Draco Meteor','Earth Power','Trick Room','Protect'] },
+
+      { name: 'Giratina-Origin', id: 10007, types: ['Ghost','Dragon'], stats: [150,120,100,120,100,90], ability: 'Levitate', learnset: ['Poltergeist','Draco Meteor','Shadow Ball','Will-O-Wisp','Protect'] },
+
+      { name: 'Ho-Oh', id: 250, types: ['Fire','Flying'], stats: [106,130,90,110,154,90], ability: 'Regenerator', learnset: ['Sacred Fire','Brave Bird','Tailwind','Recover','Protect'] },
+
+      { name: 'Lugia', id: 249, types: ['Psychic','Flying'], stats: [106,90,130,90,154,110], ability: 'Multiscale', learnset: ['Air Slash','Earth Power','Calm Mind','Recover','Protect'] },
+
+      { name: 'Mewtwo', id: 150, types: ['Psychic'], stats: [106,110,90,154,90,130], ability: 'Unnerve', learnset: ['Expanding Force','Ice Beam','Shadow Ball','Nasty Plot','Protect'] },
+
+      { name: 'Reshiram', id: 643, types: ['Dragon','Fire'], stats: [100,120,100,150,120,90], ability: 'Turboblaze', learnset: ['Heat Wave','Draco Meteor','Earth Power','Tailwind','Protect'] },
+
+      { name: 'Zekrom', id: 644, types: ['Dragon','Electric'], stats: [100,150,120,120,100,90], ability: 'Teravolt', learnset: ['Wild Charge','Dragon Claw','Dragon Dance','Tailwind','Protect'] },
+
+      { name: 'Kyurem-White', id: 10023, types: ['Dragon','Ice'], stats: [125,120,90,170,100,95], ability: 'Turboblaze', learnset: ['Blizzard','Freeze-Dry','Draco Meteor','Earth Power','Protect'] },
+
+      { name: 'Kyurem-Black', id: 10022, types: ['Dragon','Ice'], stats: [125,170,100,120,90,95], ability: 'Teravolt', learnset: ['Icicle Crash','Scale Shot','Dragon Dance','Earth Power','Protect'] },
+
+      { name: 'Xerneas', id: 716, types: ['Fairy'], stats: [126,131,95,131,98,99], ability: 'Fairy Aura', learnset: ['Moonblast','Dazzling Gleam','Calm Mind','Thunderbolt','Protect'] },
+
+      { name: 'Yveltal', id: 717, types: ['Dark','Flying'], stats: [126,131,95,131,98,99], ability: 'Dark Aura', learnset: ['Dark Pulse','Snarl','Sucker Punch','Tailwind','Heat Wave','Protect'] },
+
+      { name: 'Zygarde', id: 718, types: ['Dragon','Ground'], stats: [108,100,121,81,95,95], ability: 'Aura Break', learnset: ['Precipice Blades','Dragon Dance','Extreme Speed','Protect'] },
+
+
+
+      // Top VGC Doubles Staples & Paradox Pokémon
+
+      { name: 'Incineroar', id: 727, types: ['Fire','Dark'], stats: [95,115,90,80,90,60], ability: 'Intimidate', learnset: ['Fake Out','Flare Blitz','Knock Off','Parting Shot','Will-O-Wisp','Taunt'] },
+
+      { name: 'Rillaboom', id: 812, types: ['Grass'], stats: [100,125,90,60,70,85], ability: 'Grassy Surge', learnset: ['Fake Out','Grassy Glide','Wood Hammer','U-turn','High Horsepower','Protect'] },
+
+      { name: 'Urshifu-Rapid-Strike', id: 10191, types: ['Fighting','Water'], stats: [100,130,100,63,60,97], ability: 'Unseen Fist', learnset: ['Surging Strikes','Close Combat','Aqua Jet','U-turn','Protect'] },
+
+      { name: 'Urshifu-Single-Strike', id: 892, types: ['Fighting','Dark'], stats: [100,130,100,63,60,97], ability: 'Unseen Fist', learnset: ['Wicked Blow','Close Combat','Sucker Punch','U-turn','Protect'] },
+
+      { name: 'Flutter Mane', id: 987, types: ['Ghost','Fairy'], stats: [55,55,55,135,135,135], ability: 'Protosynthesis', learnset: ['Moonblast','Dazzling Gleam','Shadow Ball','Icy Wind','Taunt','Protect'] },
+
+      { name: 'Raging Bolt', id: 1021, types: ['Electric','Dragon'], stats: [125,73,91,137,89,75], ability: 'Protosynthesis', learnset: ['Thunderclap','Thunderbolt','Draco Meteor','Snarl','Calm Mind','Protect'] },
+
+      { name: 'Ogerpon-Wellspring', id: 10273, types: ['Grass','Water'], stats: [80,120,84,60,96,110], ability: 'Water Absorb', itemLock: 'Wellspring Mask', learnset: ['Ivy Cudgel','Horn Leech','Follow Me','Spiky Shield'] },
+
+      { name: 'Ogerpon-Hearthflame', id: 10274, types: ['Grass','Fire'], stats: [80,120,84,60,96,110], ability: 'Mold Breaker', itemLock: 'Hearthflame Mask', learnset: ['Ivy Cudgel','Wood Hammer','Follow Me','Spiky Shield'] },
+
+      { name: 'Ogerpon-Cornerstone', id: 10275, types: ['Grass','Rock'], stats: [80,120,84,60,96,110], ability: 'Sturdy', itemLock: 'Cornerstone Mask', learnset: ['Ivy Cudgel','Power Whip','Follow Me','Spiky Shield'] },
+
+      { name: 'Amoonguss', id: 591, types: ['Grass','Poison'], stats: [114,85,70,85,80,30], ability: 'Regenerator', learnset: ['Spore','Rage Powder','Pollen Puff','Protect'] },
+
+      { name: 'Tornadus', id: 641, types: ['Flying'], stats: [79,115,70,125,80,111], ability: 'Prankster', learnset: ['Bleakwind Storm','Tailwind','Taunt','Protect'] },
+
+      { name: 'Whimsicott', id: 547, types: ['Grass','Fairy'], stats: [60,67,85,77,75,116], ability: 'Prankster', learnset: ['Moonblast','Tailwind','Encore','Helping Hand','Protect'] },
+
+      { name: 'Chien-Pao', id: 1002, types: ['Dark','Ice'], stats: [80,120,80,90,65,135], ability: 'Sword of Ruin', learnset: ['Icicle Crash','Sucker Punch','Sacred Sword','Ice Shard','Protect'] },
+
+      { name: 'Chi-Yu', id: 1004, types: ['Dark','Fire'], stats: [55,80,80,135,120,100], ability: 'Beads of Ruin', learnset: ['Heat Wave','Overheat','Dark Pulse','Snarl','Protect'] },
+
+      { name: 'Ting-Lu', id: 1003, types: ['Dark','Ground'], stats: [155,110,125,55,80,45], ability: 'Vessel of Ruin', learnset: ['High Horsepower','Heavy Slam','Snarl','Protect'] },
+
+      { name: 'Wo-Chien', id: 1001, types: ['Dark','Grass'], stats: [85,85,100,95,135,70], ability: 'Tablets of Ruin', learnset: ['Pollen Puff','Snarl','Foul Play','Protect'] },
+
+      { name: 'Landorus-Incarnate', id: 645, types: ['Ground','Flying'], stats: [89,125,90,115,80,101], ability: 'Sheer Force', learnset: ['Earth Power','Sludge Bomb','Sandsear Storm','Protect'] },
+
+      { name: 'Landorus-Therian', id: 10021, types: ['Ground','Flying'], stats: [89,145,90,105,80,91], ability: 'Intimidate', learnset: ['Stomping Tantrum','Rock Slide','U-turn','Protect'] },
+
+      { name: 'Ursaluna-Bloodmoon', id: 10272, types: ['Ground','Normal'], stats: [113,70,120,135,65,52], ability: 'Mind\'s Eye', learnset: ['Blood Moon','Earth Power','Hyper Voice','Vacuum Wave','Protect'] },
+
+      { name: 'Ursaluna', id: 901, types: ['Ground','Normal'], stats: [130,140,105,45,80,50], ability: 'Guts', learnset: ['Facade','Headlong Rush','Earthquake','Protect'] },
+
+      { name: 'Iron Hands', id: 992, types: ['Fighting','Electric'], stats: [154,140,108,50,68,50], ability: 'Quark Drive', learnset: ['Fake Out','Drain Punch','Wild Charge','Heavy Slam','Volt Switch','Protect'] },
+
+      { name: 'Iron Crown', id: 1023, types: ['Steel','Psychic'], stats: [90,72,100,122,108,98], ability: 'Quark Drive', learnset: ['Tachyon Cutter','Expanding Force','Volt Switch','Protect'] },
+
+      { name: 'Iron Boulder', id: 1022, types: ['Rock','Psychic'], stats: [90,120,80,68,108,124], ability: 'Quark Drive', learnset: ['Mighty Cleave','Psycho Cut','Close Combat','Protect'] },
+
+      { name: 'Iron Bundle', id: 991, types: ['Ice','Water'], stats: [56,80,114,124,60,136], ability: 'Quark Drive', learnset: ['Freeze-Dry','Hydro Pump','Icy Wind','Encore','Protect'] },
+
+      { name: 'Iron Valiant', id: 1006, types: ['Fairy','Fighting'], stats: [74,130,90,120,60,116], ability: 'Quark Drive', learnset: ['Moonblast','Close Combat','Spirit Break','Encore','Protect'] },
+
+      { name: 'Iron Moth', id: 994, types: ['Fire','Poison'], stats: [80,70,60,140,110,110], ability: 'Quark Drive', learnset: ['Heat Wave','Sludge Bomb','Energy Ball','Protect'] },
+
+      { name: 'Iron Jugulis', id: 993, types: ['Dark','Flying'], stats: [94,80,86,122,80,108], ability: 'Quark Drive', learnset: ['Hurricane','Dark Pulse','Snarl','Tailwind','Protect'] },
+
+      { name: 'Iron Thorns', id: 995, types: ['Rock','Electric'], stats: [100,134,110,70,84,72], ability: 'Quark Drive', learnset: ['Rock Slide','Wild Charge','Dragon Dance','Protect'] },
+
+      { name: 'Roaring Moon', id: 1005, types: ['Dragon','Dark'], stats: [105,139,71,55,101,119], ability: 'Protosynthesis', learnset: ['Knock Off','Acrobatics','Breaking Swipe','Tailwind','Protect'] },
+
+      { name: 'Gouging Fire', id: 1020, types: ['Fire','Dragon'], stats: [105,115,121,65,93,91], ability: 'Protosynthesis', learnset: ['Flare Blitz','Breaking Swipe','Burning Bulwark','Dragon Dance'] },
+
+      { name: 'Walking Wake', id: 1009, types: ['Water','Dragon'], stats: [99,83,91,125,83,109], ability: 'Protosynthesis', learnset: ['Hydro Steam','Draco Meteor','Flamethrower','Snarl','Protect'] },
+
+      { name: 'Great Tusk', id: 984, types: ['Ground','Fighting'], stats: [115,131,131,53,53,87], ability: 'Protosynthesis', learnset: ['Headlong Rush','Close Combat','Ice Spinner','Protect'] },
+
+      { name: 'Scream Tail', id: 985, types: ['Fairy','Psychic'], stats: [115,65,99,65,115,111], ability: 'Protosynthesis', learnset: ['Dazzling Gleam','Encore','Trick Room','Protect'] },
+
+      { name: 'Brute Bonnet', id: 986, types: ['Grass','Dark'], stats: [111,127,99,79,99,55], ability: 'Protosynthesis', learnset: ['Spore','Rage Powder','Sucker Punch','Protect'] },
+
+      { name: 'Slither Wing', id: 988, types: ['Bug','Fighting'], stats: [85,135,79,85,105,81], ability: 'Protosynthesis', learnset: ['First Impression','Close Combat','U-turn','Will-O-Wisp','Protect'] },
+
+      { name: 'Sandy Shocks', id: 989, types: ['Electric','Ground'], stats: [85,81,97,121,85,101], ability: 'Protosynthesis', learnset: ['Thunderbolt','Earth Power','Electroweb','Protect'] },
+
+      { name: 'Farigiraf', id: 981, types: ['Normal','Psychic'], stats: [120,90,70,110,70,60], ability: 'Armor Tail', learnset: ['Psychic','Hyper Voice','Trick Room','Helping Hand','Protect'] },
+
+      { name: 'Indeedee-F', id: 10186, types: ['Psychic','Normal'], stats: [70,55,65,95,105,85], ability: 'Psychic Surge', learnset: ['Follow Me','Helping Hand','Psychic','Trick Room','Protect'] },
+
+      { name: 'Gholdengo', id: 1000, types: ['Steel','Ghost'], stats: [87,60,95,133,91,84], ability: 'Good as Gold', learnset: ['Make It Rain','Shadow Ball','Nasty Plot','Protect'] },
+
+      { name: 'Kingambit', id: 983, types: ['Dark','Steel'], stats: [100,135,120,60,85,50], ability: 'Defiant', learnset: ['Kowtow Cleave','Sucker Punch','Iron Head','Swords Dance','Protect'] },
+
+      { name: 'Annihilape', id: 979, types: ['Fighting','Ghost'], stats: [110,115,80,50,90,90], ability: 'Defiant', learnset: ['Rage Fist','Drain Punch','Bulk Up','Protect'] },
+
+      { name: 'Archaludon', id: 1018, types: ['Steel','Dragon'], stats: [90,105,130,125,65,85], ability: 'Stamina', learnset: ['Electro Shot','Flash Cannon','Draco Meteor','Body Press','Protect'] },
+
+      { name: 'Pelipper', id: 279, types: ['Water','Flying'], stats: [60,50,100,95,70,65], ability: 'Drizzle', learnset: ['Hydro Pump','Hurricane','Tailwind','Protect'] },
+
+      { name: 'Torkoal', id: 324, types: ['Fire'], stats: [70,85,140,85,70,20], ability: 'Drought', learnset: ['Eruption','Heat Wave','Earth Power','Protect'] },
+
+      { name: 'Ninetales-Alola', id: 10104, types: ['Ice','Fairy'], stats: [73,67,75,81,100,109], ability: 'Snow Warning', learnset: ['Blizzard','Moonblast','Aurora Veil','Icy Wind','Protect'] },
+
+      { name: 'Dragonite', id: 149, types: ['Dragon','Flying'], stats: [91,134,95,100,100,80], ability: 'Inner Focus', learnset: ['Extreme Speed','Scale Shot','Iron Head','Tailwind','Protect'] },
+
+      { name: 'Baxcalibur', id: 998, types: ['Dragon','Ice'], stats: [115,145,92,75,86,87], ability: 'Thermal Exchange', learnset: ['Glaive Rush','Icicle Crash','Ice Shard','Protect'] },
+
+      { name: 'Hydreigon', id: 635, types: ['Dark','Dragon'], stats: [92,105,90,125,90,98], ability: 'Levitate', learnset: ['Draco Meteor','Dark Pulse','Heat Wave','Snarl','Tailwind','Protect'] },
+
+      { name: 'Dragapult', id: 887, types: ['Dragon','Ghost'], stats: [88,120,75,100,75,142], ability: 'Clear Body', learnset: ['Dragon Darts','Poltergeist','U-turn','Will-O-Wisp','Protect'] },
+
+      { name: 'Goodra-Hisui', id: 10242, types: ['Steel','Dragon'], stats: [80,100,100,110,150,60], ability: 'Shell Armor', learnset: ['Heavy Slam','Draco Meteor','Life Dew','Body Press','Protect'] },
+
+      { name: 'Sinistcha', id: 1013, types: ['Grass','Ghost'], stats: [71,60,106,121,80,70], ability: 'Hospitality', learnset: ['Matcha Gotcha','Shadow Ball','Rage Powder','Trick Room','Life Dew','Protect'] },
+
+      { name: 'Dondozo', id: 977, types: ['Water'], stats: [150,100,115,65,65,35], ability: 'Unaware', learnset: ['Wave Crash','Liquidation','Earthquake','Protect'] },
+
+      { name: 'Tatsugiri', id: 978, types: ['Dragon','Water'], stats: [68,50,60,120,95,82], ability: 'Commander', learnset: ['Muddy Water','Draco Meteor','Icy Wind','Helping Hand','Protect'] },
+
+      { name: 'Glimmora', id: 970, types: ['Rock','Poison'], stats: [83,55,90,130,81,86], ability: 'Toxic Debris', learnset: ['Power Gem','Sludge Bomb','Earth Power','Mortal Spin','Spiky Shield'] },
+
+      { name: 'Maushold', id: 925, types: ['Normal'], stats: [74,75,70,65,75,111], ability: 'Friend Guard', learnset: ['Population Bomb','Follow Me','Helping Hand','Protect'] },
+
+      { name: 'Clefairy', id: 35, types: ['Fairy'], stats: [70,45,48,60,65,35], ability: 'Friend Guard', learnset: ['Follow Me','Helping Hand','Life Dew','Moonblast','Protect'] },
+
+      { name: 'Grimmsnarl', id: 861, types: ['Dark','Fairy'], stats: [95,120,65,95,75,60], ability: 'Prankster', learnset: ['Spirit Break','Parting Shot','Light Screen','Reflect','Thunder Wave','Fake Out'] },
+
+      { name: 'Murkrow', id: 198, types: ['Dark','Flying'], stats: [60,85,42,85,42,91], ability: 'Prankster', learnset: ['Foul Play','Tailwind','Snarl','Protect'] },
+
+      { name: 'Arcanine-Hisui', id: 10230, types: ['Fire','Rock'], stats: [95,115,80,95,80,90], ability: 'Intimidate', learnset: ['Rock Slide','Flare Blitz','Extreme Speed','Will-O-Wisp','Protect'] },
+
+      { name: 'Arcanine', id: 59, types: ['Fire'], stats: [90,110,80,100,80,95], ability: 'Intimidate', learnset: ['Flare Blitz','Extreme Speed','Snarl','Will-O-Wisp','Protect'] },
+
+      { name: 'Hitmontop', id: 237, types: ['Fighting'], stats: [50,95,95,35,110,70], ability: 'Intimidate', learnset: ['Fake Out','Close Combat','Helping Hand','Protect'] },
+
+      { name: 'Scrafty', id: 560, types: ['Dark','Fighting'], stats: [65,90,115,45,115,58], ability: 'Intimidate', learnset: ['Fake Out','Knock Off','Drain Punch','Snarl','Protect'] },
+
+      { name: 'Armarouge', id: 936, types: ['Fire','Psychic'], stats: [85,60,100,125,80,75], ability: 'Flash Fire', learnset: ['Armor Cannon','Expanding Force','Heat Wave','Trick Room','Protect'] },
+
+      { name: 'Ceruledge', id: 937, types: ['Fire','Ghost'], stats: [75,125,80,60,100,85], ability: 'Flash Fire', learnset: ['Bitter Blade','Shadow Sneak','Close Combat','Bulk Up','Protect'] },
+
+      { name: 'Volcarona', id: 637, types: ['Bug','Fire'], stats: [85,60,65,135,105,100], ability: 'Flame Body', learnset: ['Heat Wave','Bug Buzz','Rage Powder','Tailwind','Protect'] },
+
+      { name: 'Talonflame', id: 663, types: ['Fire','Flying'], stats: [78,81,71,74,69,126], ability: 'Gale Wings', learnset: ['Brave Bird','Flare Blitz','Tailwind','Will-O-Wisp','Protect'] },
+
+      { name: 'Corviknight', id: 823, types: ['Flying','Steel'], stats: [98,87,105,53,85,67], ability: 'Mirror Armor', learnset: ['Brave Bird','Body Press','Tailwind','Roost','Protect'] },
+
+      { name: 'Skarmory', id: 227, types: ['Steel','Flying'], stats: [65,80,140,40,70,70], ability: 'Sturdy', learnset: ['Body Press','Iron Defense','Tailwind','Roost','Protect'] },
+
+      { name: 'Zapdos', id: 145, types: ['Electric','Flying'], stats: [90,90,85,125,90,100], ability: 'Static', learnset: ['Thunderbolt','Hurricane','Heat Wave','Tailwind','Roost','Protect'] },
+
+      { name: 'Zapdos-Galar', id: 10170, types: ['Fighting','Flying'], stats: [90,125,90,85,90,100], ability: 'Defiant', learnset: ['Brave Bird','Close Combat','U-turn','Protect'] },
+
+      { name: 'Moltres-Galar', id: 10171, types: ['Dark','Flying'], stats: [90,85,90,100,125,90], ability: 'Berserk', learnset: ['Fiery Wrath','Air Slash','Snarl','Nasty Plot','Protect'] },
+
+      { name: 'Thundurus', id: 642, types: ['Electric','Flying'], stats: [79,115,70,125,80,111], ability: 'Prankster', learnset: ['Wildbolt Storm','Thunder Wave','Taunt','Protect'] },
+
+      { name: 'Enamorus', id: 905, types: ['Fairy','Flying'], stats: [74,115,70,135,80,106], ability: 'Contrary', learnset: ['Springtide Storm','Moonblast','Earth Power','Tailwind','Protect'] },
+
+      { name: 'Enamorus-Therian', id: 10249, types: ['Fairy','Flying'], stats: [74,115,110,135,100,46], ability: 'Overcoat', learnset: ['Springtide Storm','Moonblast','Earth Power','Trick Room','Protect'] },
+
+      { name: 'Cresselia', id: 488, types: ['Psychic'], stats: [120,70,110,75,120,85], ability: 'Levitate', learnset: ['Psychic','Icy Wind','Trick Room','Helping Hand','Protect'] },
+
+      { name: 'Heatran', id: 485, types: ['Fire','Steel'], stats: [91,90,106,130,106,77], ability: 'Flash Fire', learnset: ['Heat Wave','Flash Cannon','Earth Power','Protect'] },
+
+      { name: 'Regieleki', id: 894, types: ['Electric'], stats: [80,100,50,100,50,200], ability: 'Transistor', learnset: ['Thunderbolt','Electroweb','Volt Switch','Protect'] },
+
+      { name: 'Regidrago', id: 895, types: ['Dragon'], stats: [200,100,50,100,50,80], ability: 'Dragon\'s Maw', learnset: ['Draco Meteor','Earth Power','Dragon Claw','Protect'] },
+
+      { name: 'Tapu Koko', id: 785, types: ['Electric','Fairy'], stats: [70,115,85,95,75,130], ability: 'Electric Surge', learnset: ['Thunderbolt','Dazzling Gleam','Volt Switch','Electroweb','Protect'] },
+
+      { name: 'Tapu Lele', id: 786, types: ['Psychic','Fairy'], stats: [70,85,75,130,115,95], ability: 'Psychic Surge', learnset: ['Expanding Force','Moonblast','Dazzling Gleam','Protect'] },
+
+      { name: 'Tapu Fini', id: 788, types: ['Water','Fairy'], stats: [70,75,115,95,130,85], ability: 'Misty Surge', learnset: ['Muddy Water','Moonblast','Calm Mind','Protect'] },
+
+      { name: 'Tapu Bulu', id: 787, types: ['Grass','Fairy'], stats: [70,130,115,85,95,75], ability: 'Grassy Surge', learnset: ['Wood Hammer','Horn Leech','Play Rough','Protect'] },
+
+      { name: 'Kartana', id: 798, types: ['Grass','Steel'], stats: [59,181,131,59,31,109], ability: 'Beast Boost', learnset: ['Leaf Blade','Sacred Sword','Iron Head','Tailwind','Protect'] },
+
+      { name: 'Celesteela', id: 797, types: ['Steel','Flying'], stats: [97,101,103,107,101,61], ability: 'Beast Boost', learnset: ['Heavy Slam','Flamethrower','Air Slash','Protect'] },
+
+      { name: 'Nihilego', id: 793, types: ['Rock','Poison'], stats: [109,53,47,127,131,103], ability: 'Beast Boost', learnset: ['Power Gem','Sludge Bomb','Dazzling Gleam','Trick Room','Protect'] },
+
+      { name: 'Stakataka', id: 805, types: ['Rock','Steel'], stats: [61,131,211,53,101,13], ability: 'Beast Boost', learnset: ['Heavy Slam','Rock Slide','Body Press','Trick Room','Protect'] },
+
+      { name: 'Blacephalon', id: 806, types: ['Fire','Ghost'], stats: [53,127,53,151,79,107], ability: 'Beast Boost', learnset: ['Heat Wave','Shadow Ball','Overheat','Trick Room','Protect'] },
+
+      { name: 'Pheromosa', id: 795, types: ['Bug','Fighting'], stats: [71,137,37,137,37,151], ability: 'Beast Boost', learnset: ['Close Combat','U-turn','Ice Beam','Electroweb','Protect'] },
+
+      { name: 'Buzzwole', id: 794, types: ['Bug','Fighting'], stats: [107,139,139,53,53,79], ability: 'Beast Boost', learnset: ['Close Combat','Ice Punch','Bulk Up','Protect'] },
+
+      { name: 'Xurkitree', id: 796, types: ['Electric'], stats: [83,89,71,173,71,83], ability: 'Beast Boost', learnset: ['Thunderbolt','Discharge','Dazzling Gleam','Energy Ball','Protect'] },
+
+      { name: 'Naganadel', id: 804, types: ['Poison','Dragon'], stats: [73,73,73,127,73,121], ability: 'Beast Boost', learnset: ['Sludge Bomb','Draco Meteor','Flamethrower','Tailwind','Protect'] },
+
+      { name: 'Aegislash', id: 681, types: ['Steel','Ghost'], stats: [60,140,140,140,140,60], ability: 'Stance Change', learnset: ['Shadow Ball','Flash Cannon','Sacred Sword','King\'s Shield'] },
+
+      { name: 'Ferrothorn', id: 598, types: ['Grass','Steel'], stats: [74,94,131,54,116,20], ability: 'Iron Barbs', learnset: ['Power Whip','Iron Head','Body Press','Protect'] },
+
+      { name: 'Toxapex', id: 748, types: ['Poison','Water'], stats: [50,63,152,53,142,35], ability: 'Regenerator', learnset: ['Scald','Sludge Bomb','Recover','Protect'] },
+
+      { name: 'Rotom-Wash', id: 10008, types: ['Electric','Water'], stats: [50,65,107,105,107,86], ability: 'Levitate', learnset: ['Hydro Pump','Thunderbolt','Volt Switch','Will-O-Wisp','Protect'] },
+
+      { name: 'Rotom-Heat', id: 10009, types: ['Electric','Fire'], stats: [50,65,107,105,107,86], ability: 'Levitate', learnset: ['Overheat','Thunderbolt','Volt Switch','Will-O-Wisp','Protect'] },
+
+      { name: 'Rotom-Mow', id: 10012, types: ['Electric','Grass'], stats: [50,65,107,105,107,86], ability: 'Levitate', learnset: ['Leaf Storm','Thunderbolt','Volt Switch','Will-O-Wisp','Protect'] },
+
+      { name: 'Excadrill', id: 530, types: ['Ground','Steel'], stats: [110,135,60,50,65,88], ability: 'Sand Rush', learnset: ['High Horsepower','Iron Head','Rock Slide','Swords Dance','Protect'] },
+
+      { name: 'Gastrodon', id: 423, types: ['Water','Ground'], stats: [111,83,68,92,82,39], ability: 'Storm Drain', learnset: ['Earth Power','Muddy Water','Ice Beam','Recover','Protect'] },
+
+      { name: 'Milotic', id: 350, types: ['Water'], stats: [95,60,79,100,125,81], ability: 'Competitive', learnset: ['Scald','Ice Beam','Icy Wind','Recover','Protect'] },
+
+      { name: 'Gothitelle', id: 576, types: ['Psychic'], stats: [70,55,95,95,110,65], ability: 'Shadow Tag', learnset: ['Fake Out','Psychic','Trick Room','Helping Hand','Protect'] },
+
+      { name: 'Hatterene', id: 858, types: ['Psychic','Fairy'], stats: [57,90,95,136,103,29], ability: 'Magic Bounce', learnset: ['Expanding Force','Dazzling Gleam','Trick Room','Life Dew','Protect'] },
+
+      { name: 'Tinkaton', id: 959, types: ['Fairy','Steel'], stats: [85,75,77,70,105,94], ability: 'Mold Breaker', learnset: ['Fake Out','Gigaton Hammer','Play Rough','Protect'] },
+
+      { name: 'Palafin', id: 964, types: ['Water'], stats: [100,160,97,106,87,100], ability: 'Zero to Hero', learnset: ['Jet Punch','Wave Crash','Close Combat','Flip Turn','Protect'] },
+
+      { name: 'Basculegion', id: 902, types: ['Water','Ghost'], stats: [120,112,65,80,75,78], ability: 'Swift Swim', learnset: ['Wave Crash','Aqua Jet','Shadow Ball','Protect'] },
+
+      { name: 'Overqwil', id: 904, types: ['Dark','Poison'], stats: [85,115,95,65,65,85], ability: 'Intimidate', learnset: ['Crunch','Liquidation','Gunk Shot','Protect'] },
+
+      { name: 'Sneasler', id: 903, types: ['Fighting','Poison'], stats: [80,130,60,40,80,120], ability: 'Unburden', learnset: ['Fake Out','Close Combat','Dire Claw','U-turn','Protect'] },
+
+      { name: 'Lilligant-Hisui', id: 10237, types: ['Grass','Fighting'], stats: [70,105,75,50,75,105], ability: 'Chlorophyll', learnset: ['Close Combat','Leaf Blade','Sleep Powder','Protect'] },
+
+      { name: 'Snorlax', id: 143, types: ['Normal'], stats: [160,110,65,65,110,30], ability: 'Thick Fat', learnset: ['Body Slam','High Horsepower','Heavy Slam','Protect'] },
+
+      { name: 'Porygon2', id: 233, types: ['Normal'], stats: [85,80,90,105,95,60], ability: 'Download', learnset: ['Tri Attack','Ice Beam','Trick Room','Recover','Protect'] },
+
+      { name: 'Togekiss', id: 468, types: ['Fairy','Flying'], stats: [85,50,95,120,115,80], ability: 'Serene Grace', learnset: ['Follow Me','Air Slash','Dazzling Gleam','Helping Hand','Protect'] },
+
+      { name: 'Mamoswine', id: 473, types: ['Ice','Ground'], stats: [110,130,80,70,60,80], ability: 'Thick Fat', learnset: ['Icicle Crash','High Horsepower','Ice Shard','Protect'] },
+
+      { name: 'Weavile', id: 461, types: ['Dark','Ice'], stats: [70,120,65,45,85,125], ability: 'Pressure', learnset: ['Fake Out','Icicle Crash','Knock Off','Ice Shard','Protect'] },
+
+      { name: 'Gliscor', id: 472, types: ['Ground','Flying'], stats: [75,95,125,45,75,95], ability: 'Poison Heal', learnset: ['Earthquake','Facade','Tailwind','Protect'] },
+
+      { name: 'Conkeldurr', id: 534, types: ['Fighting'], stats: [105,140,95,55,65,45], ability: 'Guts', learnset: ['Drain Punch','Mach Punch','Knock Off','Protect'] },
+
+      { name: 'Reuniclus', id: 579, types: ['Psychic'], stats: [110,65,75,125,85,30], ability: 'Magic Guard', learnset: ['Expanding Force','Trick Room','Recover','Protect'] },
+
+      { name: 'Chandelure', id: 609, types: ['Ghost','Fire'], stats: [60,55,90,145,90,80], ability: 'Flash Fire', learnset: ['Heat Wave','Shadow Ball','Trick Room','Protect'] },
+
+      { name: 'Hydrapple', id: 1019, types: ['Grass','Dragon'], stats: [106,80,110,120,80,44], ability: 'Regenerator', learnset: ['Energy Ball','Earth Power','Pollen Puff','Protect'] },
+
+      { name: 'Slowking-Galar', id: 10172, types: ['Poison','Psychic'], stats: [95,65,80,110,110,30], ability: 'Regenerator', learnset: ['Chilly Reception','Sludge Bomb','Psychic','Trick Room','Protect'] },
+
+      { name: 'Slowking', id: 199, types: ['Water','Psychic'], stats: [95,75,80,100,110,30], ability: 'Regenerator', learnset: ['Chilly Reception','Scald','Psychic','Trick Room','Helping Hand'] },
+
+      { name: 'Sylveon', id: 700, types: ['Fairy'], stats: [95,65,65,110,130,60], ability: 'Pixilate', learnset: ['Hyper Voice','Moonblast','Shadow Ball','Helping Hand','Protect'] },
+
+      { name: 'Umbreon', id: 197, types: ['Dark'], stats: [95,65,110,60,130,65], ability: 'Inner Focus', learnset: ['Foul Play','Snarl','Helping Hand','Protect'] },
+
+      { name: 'Espeon', id: 196, types: ['Psychic'], stats: [65,65,60,130,95,110], ability: 'Magic Bounce', learnset: ['Expanding Force','Dazzling Gleam','Shadow Ball','Protect'] },
+
+      { name: 'Kingdra', id: 230, types: ['Water','Dragon'], stats: [75,95,95,95,95,85], ability: 'Swift Swim', learnset: ['Muddy Water','Draco Meteor','Hurricane','Protect'] },
+
+      { name: 'Ludicolo', id: 272, types: ['Water','Grass'], stats: [80,70,70,90,100,70], ability: 'Swift Swim', learnset: ['Fake Out','Muddy Water','Energy Ball','Ice Beam','Protect'] },
+
+      { name: 'Politoed', id: 186, types: ['Water'], stats: [90,75,75,90,100,70], ability: 'Drizzle', learnset: ['Scald','Icy Wind','Helping Hand','Protect'] },
+
+      { name: 'Abomasnow', id: 460, types: ['Grass','Ice'], stats: [90,92,75,92,85,60], ability: 'Snow Warning', learnset: ['Blizzard','Energy Ball','Aurora Veil','Ice Shard','Protect'] },
+
+      { name: 'Hippowdon', id: 450, types: ['Ground'], stats: [108,112,118,68,72,47], ability: 'Sand Stream', learnset: ['High Horsepower','Slack Off','Protect'] },
+
+      { name: 'Mimikyu', id: 778, types: ['Ghost','Fairy'], stats: [55,90,80,50,105,96], ability: 'Disguise', learnset: ['Play Rough','Shadow Sneak','Trick Room','Will-O-Wisp','Protect'] },
+
+      { name: 'Kommo-o', id: 784, types: ['Dragon','Fighting'], stats: [75,110,125,100,105,85], ability: 'Soundproof', learnset: ['Clanging Scales','Body Press','Flamethrower','Protect'] },
+
+      { name: 'Tsareena', id: 763, types: ['Grass'], stats: [72,120,98,50,98,72], ability: 'Queenly Majesty', learnset: ['Power Whip','High Jump Kick','Helping Hand','Protect'] },
+
+      { name: 'Araquanid', id: 752, types: ['Water','Bug'], stats: [68,70,92,50,132,42], ability: 'Water Bubble', learnset: ['Liquidation','Leech Life','Waterfall','Bug Buzz','Hydro Pump','Protect'] },
+
+      { name: 'Salazzle', id: 758, types: ['Poison','Fire'], stats: [68,64,60,111,60,117], ability: 'Corrosion', learnset: ['Fake Out','Heat Wave','Sludge Bomb','Encore','Protect'] },
+
+      { name: 'Ribombee', id: 743, types: ['Bug','Fairy'], stats: [60,55,60,95,70,124], ability: 'Shield Dust', learnset: ['Moonblast','Pollen Puff','Tailwind','Protect'] },
+
+      { name: 'Comfey', id: 764, types: ['Fairy'], stats: [51,52,90,82,110,100], ability: 'Triage', learnset: ['Moonblast','Tailwind','Helping Hand','Protect'] },
+
+      { name: 'Duraludon', id: 884, types: ['Steel','Dragon'], stats: [70,95,115,120,50,85], ability: 'Stalwart', learnset: ['Flash Cannon','Draco Meteor','Thunderbolt','Body Press','Protect'] },
+
+      { name: 'Copperajah', id: 879, types: ['Steel'], stats: [122,130,69,80,69,30], ability: 'Sheer Force', learnset: ['Iron Head','High Horsepower','Play Rough','Protect'] },
+
+      { name: 'Pincurchin', id: 871, types: ['Electric'], stats: [48,101,95,91,85,15], ability: 'Electric Surge', learnset: ['Discharge','Scald','Sucker Punch','Recover','Protect'] },
+
+      { name: 'Indeedee-M', id: 876, types: ['Psychic','Normal'], stats: [60,65,55,105,95,95], ability: 'Psychic Surge', learnset: ['Expanding Force','Dazzling Gleam','Trick Room','Protect'] },
+
+      { name: 'Kilowattrel', id: 941, types: ['Electric','Flying'], stats: [70,70,60,105,60,125], ability: 'Competitive', learnset: ['Thunderbolt','Air Slash','Tailwind','Volt Switch','Protect'] },
+
+      { name: 'Flamigo', id: 973, types: ['Flying','Fighting'], stats: [82,115,74,75,64,90], ability: 'Costar', learnset: ['Close Combat','Brave Bird','Tailwind','Protect'] },
+
+      { name: 'Cetitan', id: 975, types: ['Ice'], stats: [170,113,65,45,55,73], ability: 'Slush Rush', learnset: ['Icicle Crash','Ice Shard','Earthquake','Protect'] },
+
+      { name: 'Garganacl', id: 934, types: ['Rock'], stats: [100,100,130,45,90,35], ability: 'Purifying Salt', learnset: ['Salt Cure','Body Press','Recover','Protect'] },
+
+      { name: 'Meowscarada', id: 908, types: ['Grass','Dark'], stats: [76,110,70,81,70,123], ability: 'Protean', learnset: ['Flower Trick','Knock Off','U-turn','Sucker Punch','Protect'] },
+
+      { name: 'Skeledirge', id: 911, types: ['Fire','Ghost'], stats: [104,75,100,110,75,66], ability: 'Unaware', learnset: ['Torch Song','Shadow Ball','Slack Off','Will-O-Wisp','Protect'] },
+
+      { name: 'Quaquaval', id: 914, types: ['Water','Fighting'], stats: [85,120,80,85,75,85], ability: 'Moxie', learnset: ['Aqua Step','Close Combat','Ice Spinner','U-turn','Protect'] },
+
+      { name: 'Pawmot', id: 923, types: ['Electric','Fighting'], stats: [70,115,70,70,60,105], ability: 'Iron Fist', learnset: ['Wild Charge','Close Combat','Fake Out','Mach Punch','Protect'] },
+
+      { name: 'Brambleghast', id: 947, types: ['Grass','Ghost'], stats: [55,115,70,80,70,90], ability: 'Wind Rider', learnset: ['Power Whip','Poltergeist','Shadow Sneak','Tailwind','Protect'] },
+
+      { name: 'Espathra', id: 956, types: ['Psychic'], stats: [95,60,60,101,60,105], ability: 'Speed Boost', learnset: ['Lumina Crash','Dazzling Gleam','Calm Mind','Protect'] },
+
+      { name: 'Okidogi', id: 1014, types: ['Poison','Fighting'], stats: [88,128,115,58,86,80], ability: 'Guard Dog', learnset: ['Drain Punch','Gunk Shot','Knock Off','Protect'] },
+
+      { name: 'Munkidori', id: 1015, types: ['Poison','Psychic'], stats: [88,75,66,130,90,106], ability: 'Toxic Chain', learnset: ['Sludge Bomb','Psychic','Fake Out','Parting Shot','Protect'] },
+
+      { name: 'Fezandipiti', id: 1016, types: ['Poison','Fairy'], stats: [88,91,82,70,125,99], ability: 'Toxic Chain', learnset: ['Moonblast','Sludge Bomb','Icy Wind','Tailwind','Protect'] },
+
+      { name: 'Pecharunt', id: 1025, types: ['Poison','Ghost'], stats: [88,88,160,88,88,88], ability: 'Poison Puppeteer', learnset: ['Malignant Chain','Shadow Ball','Parting Shot','Recover','Protect'] }
+
+    ];
+
+
+
+    const POKEDEX = Array.from(new Map(RAW_POKEDEX.map(p => [p.name, p])).values());
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 5. 32 FUNCTIONAL COMPETITIVE BATTLE ITEMS
+
+    // ----------------------------------------------------------------------------
+
+    const ITEMS_POOL = [
+
+      { name: 'Choice Scarf', desc: 'Boosts Speed by 1.5x, but locks into the first selected move.' },
+
+      { name: 'Choice Band', desc: 'Boosts Attack by 1.5x, but locks into the first selected move.' },
+
+      { name: 'Choice Specs', desc: 'Boosts Sp. Atk by 1.5x, but locks into the first selected move.' },
+
+      { name: 'Assault Vest', desc: 'Boosts Sp. Def by 1.5x, but prevents using Status moves.' },
+
+      { name: 'Life Orb', desc: 'Boosts move damage by 1.3x at 10% max HP recoil.' },
+
+      { name: 'Focus Sash', desc: 'Survives a fatal hit from full HP with 1 HP.' },
+
+      { name: 'Leftovers', desc: 'Restores 1/16 max HP at the end of every turn.' },
+
+      { name: 'Sitrus Berry', desc: 'Restores 25% max HP when below 50% HP.' },
+
+      { name: 'Lum Berry', desc: 'Cures any status condition once.' },
+
+      { name: 'Weakness Policy', desc: 'Sharply boosts Atk & Sp. Atk when hit super effectively.' },
+
+      { name: 'White Herb', desc: 'Restores lowered stat stages once.' },
+
+      { name: 'Mental Herb', desc: 'Cures Encore or Taunt once.' },
+
+      { name: 'Throat Spray', desc: 'Boosts Sp. Atk by +1 after using a sound move.' },
+
+      { name: 'Booster Energy', desc: 'Boosts highest stat on entry for Paradox Pokémon.' },
+
+      { name: 'Eviolite', desc: 'Boosts Defense and Sp. Def of not-fully-evolved Pokémon by 1.5x.' },
+
+      { name: 'Rocky Helmet', desc: 'Damages attackers making contact by 1/6 max HP.' },
+
+      { name: 'Covert Cloak', desc: 'Protects from secondary effects like Fake Out flinch.' },
+
+      { name: 'Safety Goggles', desc: 'Protects from powder moves (Spore/Rage Powder) & weather.' },
+
+      { name: 'Clear Amulet', desc: 'Prevents stat drops caused by opponents.' },
+
+      { name: 'Light Clay', desc: 'Extends Light Screen, Reflect, and Aurora Veil to 8 turns.' },
+
+      { name: 'Grassy Seed', desc: 'Boosts Defense by +1 on Grassy Terrain.' },
+
+      { name: 'Electric Seed', desc: 'Boosts Defense by +1 on Electric Terrain.' },
+
+      { name: 'Psychic Seed', desc: 'Boosts Sp. Def by +1 on Psychic Terrain.' },
+
+      { name: 'Misty Seed', desc: 'Boosts Sp. Def by +1 on Misty Terrain.' },
+
+      { name: 'Charcoal', desc: 'Boosts Fire-type attacks by 1.2x.' },
+
+      { name: 'Mystic Water', desc: 'Boosts Water-type attacks by 1.2x.' },
+
+      { name: 'Miracle Seed', desc: 'Boosts Grass-type attacks by 1.2x.' },
+
+      { name: 'Magnet', desc: 'Boosts Electric-type attacks by 1.2x.' },
+
+      { name: 'Pixie Plate', desc: 'Boosts Fairy-type attacks by 1.2x.' },
+
+      { name: 'Black Sludge', desc: 'Restores 1/16 HP to Poison-types each turn.' },
+
+      { name: 'Thick Club', desc: 'Doubles Attack if held by Cubone/Marowak.' },
+
+      { name: 'Expert Belt', desc: 'Boosts super-effective attacks by 1.2x.' }
+
+    ];
+
+
+
+    const TRAINER_CLASSES = [
+
+      { title: 'Factory Head', name: 'Noland' },
+
+      { title: 'Ace Trainer', name: 'Avery' },
+
+      { title: 'VGC Champion', name: 'Wolfe' },
+
+      { title: 'Dragon Tamer', name: 'Lance' },
+
+      { title: 'Battle Chatelaine', name: 'Evelyn' },
+
+      { title: 'Paradox Researcher', name: 'Sada' },
+
+      { title: 'Tera Specialist', name: 'Kieran' },
+
+      { title: 'Shadow Tactician', name: 'Grimsley' }
+
+    ];
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 6. POKÉMON INSTANCE BUILDER
+
+    // ----------------------------------------------------------------------------
+
+    function calcStat(base, isHP = false) {
+
+      if (isHP) return Math.floor(((2 * base + 31 + 21) * 50) / 100) + 60;
+
+      return Math.floor((((2 * base + 31 + 32) * 50) / 100 + 5) * 1.05);
+
+    }
+
+
+
+    function createBattleMon(speciesData, owner = 'player') {
+
+      const maxHp = calcStat(speciesData.stats[0], true);
+
+      const stats = {
+
+        hp: maxHp,
+
+        atk: calcStat(speciesData.stats[1]),
+
+        def: calcStat(speciesData.stats[2]),
+
+        spa: calcStat(speciesData.stats[3]),
+
+        spd: calcStat(speciesData.stats[4]),
+
+        spe: calcStat(speciesData.stats[5])
+
+      };
+
+
+
+      const sourcePool = speciesData.learnset || speciesData.pool || ['Protect'];
+
+      const shuffledPool = [...sourcePool].sort(() => Math.random() - 0.5);
+
+      const selectedMoves = shuffledPool.slice(0, 4);
+
+
+
+      let item;
+
+      const megaInfo = MEGA_FORMS[speciesData.name];
+
+      if (speciesData.itemLock) {
+
+        item = { name: speciesData.itemLock, desc: `Signature item locked to ${speciesData.name}.`, locked: true, isMegaStone: false };
+
+      } else if (megaInfo && Math.random() < 0.45) {
+
+        item = { name: megaInfo.stone, desc: `Enables optional Mega Evolution into ${megaInfo.megaName}!`, locked: true, isMegaStone: true };
+
+      } else {
+
+        item = { ...ITEMS_POOL[Math.floor(Math.random() * ITEMS_POOL.length)], locked: false, isMegaStone: false };
+
+      }
+
+
+
+      return {
+
+        uid: `${owner}_${speciesData.name}_${Math.random().toString(36).slice(2, 7)}`,
+
+        baseName: speciesData.name,
+
+        name: speciesData.name,
+
+        baseId: speciesData.id,
+
+        id: speciesData.id,
+
+        baseTypes: [...speciesData.types],
+
+        types: [...speciesData.types],
+
+        baseAbility: speciesData.ability,
+
+        ability: speciesData.ability,
+
+        item,
+
+        maxHp,
+
+        hp: maxHp,
+
+        baseStats: { ...stats },
+
+        initialBaseStats: { ...stats },
+
+        stages: { atk: 0, def: 0, spa: 0, spd: 0, spe: 0, acc: 0 },
+
+        status: null,
+
+        sleepTurns: 0,
+
+        moves: selectedMoves,
+
+        fainted: false,
+
+        protected: false,
+
+        protectStreak: 0,
+
+        flinched: false,
+
+        helpingHand: false,
+
+        redirecting: false,
+
+        turnsOnField: 0,
+
+        isMega: false,
+
+        choiceLockedMove: null,
+
+        encoredMove: null,
+
+        encoreTurns: 0,
+
+        revealed: owner === 'player'
+
+      };
+
+    }
+
+
+
+    const CHOICE_ITEMS = ['Choice Scarf', 'Choice Band', 'Choice Specs'];
+
+    function isChoiceItem(item) {
+
+      return Boolean(item && CHOICE_ITEMS.includes(item.name));
+
+    }
+
+
+
+    function isMoveDisabledForMon(mon, moveName) {
+
+      if (!mon || !moveName) return true;
+
+      const mv = MOVES[moveName];
+
+      if (!mv) return true;
+
+      if (isChoiceItem(mon.item) && mon.choiceLockedMove && mon.moves.includes(mon.choiceLockedMove)) {
+
+        if (moveName !== mon.choiceLockedMove) return true;
+
+      }
+
+      if (mon.encoredMove && mon.encoreTurns > 0 && mon.moves.includes(mon.encoredMove)) {
+
+        if (moveName !== mon.encoredMove) return true;
+
+      }
+
+      if (mon.item?.name === 'Assault Vest' && mv.cat === 'Status') {
+
+        return true;
+
+      }
+
+      if (mv.firstTurnOnly && mon.turnsOnField > 0) {
+
+        return true;
+
+      }
+
+      return false;
+
+    }
+
+
+
+    function canMonMegaEvolve(mon) {
+
+      if (!mon || mon.fainted || mon.isMega) return false;
+
+      const megaInfo = MEGA_FORMS[mon.baseName];
+
+      return Boolean(megaInfo && mon.item && mon.item.name === megaInfo.stone);
+
+    }
+
+
+
+    function generateRentalPool(count = 6) {
+
+      const shuffled = [...POKEDEX].sort(() => Math.random() - 0.5);
+
+      return shuffled.slice(0, count).map(sp => createBattleMon(sp, 'player'));
+
+    }
+
+
+
+    function generateOpponentSquad(excludeBaseNames = []) {
+
+      const available = POKEDEX.filter(p => !excludeBaseNames.includes(p.name));
+
+      const shuffled = [...available].sort(() => Math.random() - 0.5);
+
+      return shuffled.slice(0, 4).map((sp, idx) => {
+
+        const mon = createBattleMon(sp, 'enemy');
+
+        mon.revealed = idx < 2;
+
+        return mon;
+
+      });
+
+    }
+
+
+
+    function getSpriteUrl(id, isBack = false) {
+
+      const shinyPath = state.shinyCharm ? 'shiny/' : '';
+
+      if (isBack) {
+
+        return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/back/${shinyPath}${id}.png`;
+
+      }
+
+      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${shinyPath}${id}.png`;
+
+    }
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 7. GLOBAL GAME STATE
+
+    // ----------------------------------------------------------------------------
+
+    const state = {
+
+      screen: 'DRAFT', // 'DRAFT' | 'BATTLE' | 'SWAP' | 'DEFEAT'
+
+      streak: 0,
+
+      speedMult: 1, // Default 1x relaxed pacing (~1700ms per step)
+
+      shinyCharm: false,
+
+      draftPool: [],
+
+      selectedDraftIds: [],
+
+      playerTeam: [],
+
+      enemyTeam: [],
+
+      trainer: TRAINER_CLASSES[0],
+
+
+
+      field: {
+
+        weather: null, weatherTurns: 0,
+
+        terrain: null, terrainTurns: 0,
+
+        playerTailwind: 0, enemyTailwind: 0,
+
+        trickRoom: 0
+
+      },
+
+
+
+      turn: 1,
+
+      activePlayerSlots: [0, 1],
+
+      activeEnemySlots: [0, 1],
+
+      logs: [],
+
+      animating: false,
+
+      animFlags: {},
+
+      popups: {}, // { 'enemy-0': { text: '-124', color: 'text-rose-300' } }
+
+      cutinBanner: null,
+
+
+
+      selectingSlotPos: 0,
+
+      pendingActions: [null, null],
+
+      uiSubMode: 'MAIN', // 'MAIN' | 'TARGET' | 'SWITCH'
+
+      selectedMoveName: null,
+
+      megaWant: false,
+
+
+
+      promptQueue: [],
+
+      selectedSwapEnemyIdx: null
+
+    };
+
+
+
+    function addLog(msg, colorClass = 'text-slate-200') {
+
+      state.logs.push({ msg, colorClass, id: Math.random() });
+
+      if (state.logs.length > 80) state.logs.shift();
+
+      render();
+
+      setTimeout(() => {
+
+        const logEl = document.getElementById('battle-log-box');
+
+        if (logEl) logEl.scrollTop = logEl.scrollHeight;
+
+      }, 20);
+
+    }
+
+
+
+    function wait(ms) {
+
+      return new Promise(res => setTimeout(res, Math.round(ms / state.speedMult)));
+
+    }
+
+
+
+    function triggerAnim(key, cls) {
+
+      state.animFlags[key] = cls;
+
+      render();
+
+      setTimeout(() => {
+
+        delete state.animFlags[key];
+
+        render();
+
+      }, 750);
+
+    }
+
+
+
+    function showPopup(key, text, color = 'text-amber-300') {
+
+      state.popups[key] = { text, color, id: Math.random() };
+
+      render();
+
+      setTimeout(() => {
+
+        delete state.popups[key];
+
+        render();
+
+      }, 1350);
+
+    }
+
+
+
+    async function showCutin(title, subtitle, color = 'from-amber-500 to-pink-600') {
+
+      state.cutinBanner = { title, subtitle, color };
+
+      render();
+
+      await wait(1600);
+
+      state.cutinBanner = null;
+
+      render();
+
+    }
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 8. INITIALIZATION, DRAFT & TEAM RESET
+
+    // ----------------------------------------------------------------------------
+
+    function initDraft() {
+
+      state.screen = 'DRAFT';
+
+      state.streak = 0;
+
+      state.draftPool = generateRentalPool(6);
+
+      state.selectedDraftIds = [];
+
+      render();
+
+    }
+
+
+
+    function toggleDraftPick(uid) {
+
+      const idx = state.selectedDraftIds.indexOf(uid);
+
+      if (idx >= 0) {
+
+        state.selectedDraftIds.splice(idx, 1);
+
+      } else if (state.selectedDraftIds.length < 4) {
+
+        state.selectedDraftIds.push(uid);
+
+      }
+
+      render();
+
+    }
+
+
+
+    function confirmDraftTeam() {
+
+      if (state.selectedDraftIds.length !== 4) return;
+
+      state.playerTeam = state.selectedDraftIds.map(uid => {
+
+        const mon = state.draftPool.find(m => m.uid === uid);
+
+        return JSON.parse(JSON.stringify(mon));
+
+      });
+
+      startNextBattle();
+
+    }
+
+
+
+    function resetTeamForBattle(team) {
+
+      team.forEach(mon => {
+
+        mon.isMega = false;
+
+        mon.name = mon.baseName;
+
+        mon.id = mon.baseId;
+
+        mon.types = [...mon.baseTypes];
+
+        mon.ability = mon.baseAbility;
+
+        mon.baseStats = { ...mon.initialBaseStats };
+
+
+
+        mon.hp = mon.maxHp;
+
+        mon.fainted = false;
+
+        mon.status = null;
+
+        mon.sleepTurns = 0;
+
+        mon.stages = { atk: 0, def: 0, spa: 0, spd: 0, spe: 0, acc: 0 };
+
+        mon.protected = false;
+
+        mon.protectStreak = 0;
+
+        mon.flinched = false;
+
+        mon.helpingHand = false;
+
+        mon.redirecting = false;
+
+        mon.turnsOnField = 0;
+
+        mon.choiceLockedMove = null;
+
+        mon.encoredMove = null;
+
+        mon.encoreTurns = 0;
+
+      });
+
+    }
+
+
+
+    async function startNextBattle() {
+
+      resetTeamForBattle(state.playerTeam);
+
+      const playerBaseNames = state.playerTeam.map(m => m.baseName);
+
+      state.enemyTeam = generateOpponentSquad(playerBaseNames);
+
+      state.trainer = TRAINER_CLASSES[state.streak % TRAINER_CLASSES.length];
+
+
+
+      state.screen = 'BATTLE';
+
+      state.turn = 1;
+
+      state.activePlayerSlots = [0, 1];
+
+      state.activeEnemySlots = [0, 1];
+
+      state.logs = [];
+
+      state.animating = true;
+
+      state.selectingSlotPos = 0;
+
+      state.pendingActions = [null, null];
+
+      state.uiSubMode = 'MAIN';
+
+      state.selectedMoveName = null;
+
+      state.megaWant = false;
+
+      state.promptQueue = [];
+
+
+
+      state.field = {
+
+        weather: null, weatherTurns: 0,
+
+        terrain: null, terrainTurns: 0,
+
+        playerTailwind: 0, enemyTailwind: 0,
+
+        trickRoom: 0
+
+      };
+
+
+
+      render();
+
+      addLog(`Round ${state.streak + 1}: ${state.trainer.title} ${state.trainer.name} challenges you with a 4-Pokémon Doubles squad!`, 'text-amber-300 font-bold');
+
+      await wait(1650);
+
+
+
+      const p0 = state.playerTeam[0], p1 = state.playerTeam[1];
+
+      const e0 = state.enemyTeam[0], e1 = state.enemyTeam[1];
+
+      addLog(`You sent out ${p0.name} & ${p1.name}! (2 reserves on bench)`, 'text-emerald-300');
+
+      addLog(`${state.trainer.name} sent out ${e0.name} & ${e1.name}! (2 hidden reserves in Pokéballs)`, 'text-sky-300');
+
+      await wait(1650);
+
+
+
+      const leads = [
+
+        { side: 'player', slotPos: 0, mon: p0 },
+
+        { side: 'player', slotPos: 1, mon: p1 },
+
+        { side: 'enemy', slotPos: 0, mon: e0 },
+
+        { side: 'enemy', slotPos: 1, mon: e1 }
+
+      ].sort((a, b) => b.mon.baseStats.spe - a.mon.baseStats.spe);
+
+
+
+      for (const entry of leads) {
+
+        await triggerEntryAbility(entry.side, entry.slotPos, entry.mon);
+
+      }
+
+
+
+      state.animating = false;
+
+      prepareCommandPhase();
+
+    }
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 9. OPTIONAL MEGA EVOLUTION EXECUTION
+
+    // ----------------------------------------------------------------------------
+
+    async function performMegaEvolution(side, slotPos, mon) {
+
+      if (!canMonMegaEvolve(mon)) return;
+
+      const megaInfo = MEGA_FORMS[mon.baseName];
+
+
+
+      triggerAnim(`${side}-${slotPos}`, 'anim-mega');
+
+      await showCutin(`MEGA EVOLUTION!`, `${mon.name} → ${megaInfo.megaName}!`, 'from-fuchsia-600 via-pink-500 to-amber-400');
+
+
+
+      mon.isMega = true;
+
+      mon.name = megaInfo.megaName;
+
+      mon.id = megaInfo.megaId;
+
+      mon.types = [...megaInfo.types];
+
+      mon.ability = megaInfo.ability;
+
+      mon.baseStats = {
+
+        hp: mon.maxHp,
+
+        atk: calcStat(megaInfo.stats[1]),
+
+        def: calcStat(megaInfo.stats[2]),
+
+        spa: calcStat(megaInfo.stats[3]),
+
+        spd: calcStat(megaInfo.stats[4]),
+
+        spe: calcStat(megaInfo.stats[5])
+
+      };
+
+
+
+      addLog(`✨ ${mon.baseName}'s ${megaInfo.stone} reacted! It Mega Evolved into ${mon.name}!`, 'text-fuchsia-300 font-extrabold');
+
+      await wait(1600);
+
+      await triggerEntryAbility(side, slotPos, mon);
+
+    }
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 10. ENTRY ABILITIES & STAT HELPERS
+
+    // ----------------------------------------------------------------------------
+
+    function getStageMultiplier(stage) {
+
+      if (stage >= 0) return (2 + stage) / 2;
+
+      return 2 / (2 - stage);
+
+    }
+
+
+
+    function getEffectiveSpeed(mon, side) {
+
+      let spe = mon.baseStats.spe * getStageMultiplier(mon.stages.spe);
+
+      if (mon.status === 'par') spe *= 0.5;
+
+      if (mon.item?.name === 'Choice Scarf') spe *= 1.5;
+
+      if (side === 'player' && state.field.playerTailwind > 0) spe *= 2;
+
+      if (side === 'enemy' && state.field.enemyTailwind > 0) spe *= 2;
+
+      if (mon.ability === 'Swift Swim' && state.field.weather === 'Rain') spe *= 2;
+
+      if (mon.ability === 'Chlorophyll' && state.field.weather === 'Sun') spe *= 2;
+
+      if (mon.ability === 'Sand Rush' && state.field.weather === 'Sand') spe *= 2;
+
+      if (mon.ability === 'Slush Rush' && state.field.weather === 'Snow') spe *= 2;
+
+      if (mon.ability === 'Surge Surfer' && state.field.terrain === 'Electric') spe *= 2;
+
+      return Math.floor(spe);
+
+    }
+
+
+
+    function modifyStage(mon, stat, delta) {
+
+      if (delta < 0 && (mon.item?.name === 'Clear Amulet' || mon.ability === 'Clear Body' || mon.ability === 'Full Metal Body')) {
+
+        addLog(`${mon.name}'s ${mon.item?.name || mon.ability} prevented stat drops!`, 'text-slate-400');
+
+        return;
+
+      }
+
+      if (delta < 0 && mon.ability === 'Defiant') {
+
+        mon.stages[stat] = Math.max(-6, Math.min(6, mon.stages[stat] + delta));
+
+        mon.stages.atk = Math.min(6, mon.stages.atk + 2);
+
+        addLog(`${mon.name}'s Defiant sharply raised its Attack!`, 'text-amber-300');
+
+        return;
+
+      }
+
+      if (delta < 0 && mon.ability === 'Competitive') {
+
+        mon.stages[stat] = Math.max(-6, Math.min(6, mon.stages[stat] + delta));
+
+        mon.stages.spa = Math.min(6, mon.stages.spa + 2);
+
+        addLog(`${mon.name}'s Competitive sharply raised its Sp. Atk!`, 'text-amber-300');
+
+        return;
+
+      }
+
+      const old = mon.stages[stat];
+
+      mon.stages[stat] = Math.max(-6, Math.min(6, old + delta));
+
+      const actual = mon.stages[stat] - old;
+
+      if (actual === 0) return;
+
+
+
+      if (actual < 0 && mon.item?.name === 'White Herb') {
+
+        mon.stages[stat] = old;
+
+        mon.item = null;
+
+        addLog(`${mon.name} restored its stats using its White Herb!`, 'text-emerald-300');
+
+        return;
+
+      }
+
+
+
+      const label = { atk: 'Attack', def: 'Defense', spa: 'Sp. Atk', spd: 'Sp. Def', spe: 'Speed', acc: 'Accuracy' }[stat];
+
+      const dir = actual > 0 ? (actual >= 2 ? 'sharply rose' : 'rose') : (actual <= -2 ? 'harshly fell' : 'fell');
+
+      addLog(`${mon.name}'s ${label} ${dir}!`, actual > 0 ? 'text-cyan-300' : 'text-rose-300');
+
+    }
+
+
+
+    async function triggerEntryAbility(side, slotPos, mon) {
+
+      if (!mon || mon.fainted) return;
+
+      mon.turnsOnField = 0;
+
+      const ab = mon.ability;
+
+      const foes = side === 'player'
+
+        ? state.activeEnemySlots.map(i => i !== null ? state.enemyTeam[i] : null).filter(m => m && !m.fainted)
+
+        : state.activePlayerSlots.map(i => i !== null ? state.playerTeam[i] : null).filter(m => m && !m.fainted);
+
+
+
+      if (ab === 'Intimidate') {
+
+        await showCutin(`${mon.name}'s Intimidate`, `Lowers opposing Attack!`, 'from-amber-600 to-rose-600');
+
+        addLog(`[${mon.name}'s Intimidate]`, 'text-amber-300');
+
+        for (const f of foes) modifyStage(f, 'atk', -1);
+
+        await wait(1400);
+
+      } else if (ab === 'Drizzle' && state.field.weather !== 'Rain') {
+
+        state.field.weather = 'Rain'; state.field.weatherTurns = 5;
+
+        await showCutin(`${mon.name}'s Drizzle`, `It started to rain!`, 'from-sky-600 to-blue-700');
+
+        addLog(`[${mon.name}'s Drizzle] It started to rain!`, 'text-sky-300');
+
+        await wait(1400);
+
+      } else if ((ab === 'Drought' || ab === 'Orichalcum Pulse') && state.field.weather !== 'Sun') {
+
+        state.field.weather = 'Sun'; state.field.weatherTurns = 5;
+
+        await showCutin(`${mon.name}'s ${ab}`, `The sunlight turned harsh!`, 'from-orange-600 to-amber-500');
+
+        addLog(`[${mon.name}'s ${ab}] The sunlight turned harsh!`, 'text-orange-300');
+
+        await wait(1400);
+
+      } else if (ab === 'Snow Warning' && state.field.weather !== 'Snow') {
+
+        state.field.weather = 'Snow'; state.field.weatherTurns = 5;
+
+        await showCutin(`${mon.name}'s Snow Warning`, `It started to snow!`, 'from-cyan-500 to-sky-700');
+
+        addLog(`[${mon.name}'s Snow Warning] It started to snow!`, 'text-cyan-200');
+
+        await wait(1400);
+
+      } else if (ab === 'Sand Stream' && state.field.weather !== 'Sand') {
+
+        state.field.weather = 'Sand'; state.field.weatherTurns = 5;
+
+        await showCutin(`${mon.name}'s Sand Stream`, `A sandstorm kicked up!`, 'from-amber-700 to-yellow-600');
+
+        addLog(`[${mon.name}'s Sand Stream] A sandstorm kicked up!`, 'text-amber-400');
+
+        await wait(1400);
+
+      } else if ((ab === 'Electric Surge' || ab === 'Hadron Engine') && state.field.terrain !== 'Electric') {
+
+        state.field.terrain = 'Electric'; state.field.terrainTurns = 5;
+
+        await showCutin(`${mon.name}'s ${ab}`, `Electric Terrain activated!`, 'from-yellow-500 to-amber-600');
+
+        addLog(`[${mon.name}'s ${ab}] An electric current ran across the battlefield!`, 'text-yellow-300');
+
+        await wait(1400);
+
+      } else if (ab === 'Grassy Surge' && state.field.terrain !== 'Grassy') {
+
+        state.field.terrain = 'Grassy'; state.field.terrainTurns = 5;
+
+        await showCutin(`${mon.name}'s Grassy Surge`, `Grassy Terrain activated!`, 'from-emerald-600 to-green-700');
+
+        addLog(`[${mon.name}'s Grassy Surge] Grass grew to cover the battlefield!`, 'text-emerald-300');
+
+        await wait(1400);
+
+      } else if (ab === 'Psychic Surge' && state.field.terrain !== 'Psychic') {
+
+        state.field.terrain = 'Psychic'; state.field.terrainTurns = 5;
+
+        await showCutin(`${mon.name}'s Psychic Surge`, `Psychic Terrain activated!`, 'from-pink-600 to-purple-700');
+
+        addLog(`[${mon.name}'s Psychic Surge] The battlefield got weird!`, 'text-pink-300');
+
+        await wait(1400);
+
+      } else if (ab === 'Misty Surge' && state.field.terrain !== 'Misty') {
+
+        state.field.terrain = 'Misty'; state.field.terrainTurns = 5;
+
+        await showCutin(`${mon.name}'s Misty Surge`, `Misty Terrain activated!`, 'from-pink-400 to-indigo-500');
+
+        addLog(`[${mon.name}'s Misty Surge] Mist swirled around the battlefield!`, 'text-pink-200');
+
+        await wait(1400);
+
+      } else if (ab === 'Intrepid Sword') {
+
+        addLog(`[${mon.name}'s Intrepid Sword]`, 'text-amber-300');
+
+        modifyStage(mon, 'atk', 1);
+
+        await wait(1200);
+
+      } else if (ab === 'Dauntless Shield') {
+
+        addLog(`[${mon.name}'s Dauntless Shield]`, 'text-amber-300');
+
+        modifyStage(mon, 'def', 1);
+
+        await wait(1200);
+
+      } else if (ab === 'Sword of Ruin' || ab === 'Beads of Ruin' || ab === 'Vessel of Ruin' || ab === 'Tablets of Ruin') {
+
+        await showCutin(`${mon.name}'s ${ab}`, `Weakened surrounding Pokémon!`, 'from-purple-700 to-rose-700');
+
+        addLog(`[${mon.name}'s ${ab}] weakened the stats of all surrounding Pokémon!`, 'text-purple-300');
+
+        await wait(1300);
+
+      }
+
+
+
+      if (mon.item?.name === 'Booster Energy' && (ab === 'Protosynthesis' || ab === 'Quark Drive')) {
+
+        mon.item = null;
+
+        const bestStat = ['atk','def','spa','spd','spe'].reduce((a, b) => mon.baseStats[a] >= mon.baseStats[b] ? a : b);
+
+        addLog(`${mon.name} used its Booster Energy to activate ${ab}!`, 'text-cyan-300');
+
+        modifyStage(mon, bestStat, 1);
+
+        await wait(1200);
+
+      }
+
+      if (mon.item?.name === 'Grassy Seed' && state.field.terrain === 'Grassy') {
+
+        mon.item = null;
+
+        addLog(`${mon.name}'s Grassy Seed raised its Defense!`, 'text-emerald-300');
+
+        modifyStage(mon, 'def', 1);
+
+      }
+
+      if (mon.item?.name === 'Electric Seed' && state.field.terrain === 'Electric') {
+
+        mon.item = null;
+
+        addLog(`${mon.name}'s Electric Seed raised its Defense!`, 'text-yellow-300');
+
+        modifyStage(mon, 'def', 1);
+
+      }
+
+      if (mon.item?.name === 'Psychic Seed' && state.field.terrain === 'Psychic') {
+
+        mon.item = null;
+
+        addLog(`${mon.name}'s Psychic Seed raised its Sp. Def!`, 'text-pink-300');
+
+        modifyStage(mon, 'spd', 1);
+
+      }
+
+      if (mon.item?.name === 'Misty Seed' && state.field.terrain === 'Misty') {
+
+        mon.item = null;
+
+        addLog(`${mon.name}'s Misty Seed raised its Sp. Def!`, 'text-pink-200');
+
+        modifyStage(mon, 'spd', 1);
+
+      }
+
+    }
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 11. COMMAND PHASE & TARGET / MOVE / SWITCH HANDLERS
+
+    // ----------------------------------------------------------------------------
+
+    function prepareCommandPhase() {
+
+      state.pendingActions = [null, null];
+
+      state.uiSubMode = 'MAIN';
+
+      state.selectedMoveName = null;
+
+      state.megaWant = false;
+
+
+
+      const s0 = state.activePlayerSlots[0] !== null ? state.playerTeam[state.activePlayerSlots[0]] : null;
+
+      const s1 = state.activePlayerSlots[1] !== null ? state.playerTeam[state.activePlayerSlots[1]] : null;
+
+
+
+      if (s0 && !s0.fainted) {
+
+        state.selectingSlotPos = 0;
+
+      } else if (s1 && !s1.fainted) {
+
+        state.selectingSlotPos = 1;
+
+      }
+
+      render();
+
+    }
+
+
+
+    function toggleMegaWant() {
+
+      const activeMon = getActiveMon('player', state.selectingSlotPos);
+
+      if (!canMonMegaEvolve(activeMon)) {
+
+        state.megaWant = false;
+
+        render();
+
+        return;
+
+      }
+
+      state.megaWant = !state.megaWant;
+
+      render();
+
+    }
+
+
+
+    function selectMove(moveName) {
+
+      if (state.animating || state.promptQueue.length > 0) return;
+
+      const activeMon = getActiveMon('player', state.selectingSlotPos);
+
+      if (!activeMon || activeMon.fainted) return;
+
+      if (isMoveDisabledForMon(activeMon, moveName)) return;
+
+
+
+      const move = MOVES[moveName];
+
+      if (!move) return;
+
+      state.selectedMoveName = moveName;
+
+
+
+      if (move.target === 'self' || move.target === 'field' || move.target === 'allFoes' || move.target === 'allOthers') {
+
+        commitPlayerAction({
+
+          type: 'MOVE',
+
+          moveName,
+
+          megaWant: state.megaWant,
+
+          targetSide: move.target === 'self' || move.target === 'field' ? 'player' : 'enemy',
+
+          targetSlotPos: 0
+
+        });
+
+      } else if (move.target === 'ally') {
+
+        const allyPos = state.selectingSlotPos === 0 ? 1 : 0;
+
+        commitPlayerAction({
+
+          type: 'MOVE',
+
+          moveName,
+
+          megaWant: state.megaWant,
+
+          targetSide: 'player',
+
+          targetSlotPos: allyPos
+
+        });
+
+      } else {
+
+        // Opens target mode for Foe 1, Foe 2, AND Partner Ally!
+
+        state.uiSubMode = 'TARGET';
+
+        render();
+
+      }
+
+    }
+
+
+
+    function selectTarget(targetSide, targetSlotPos) {
+
+      if (state.animating || state.promptQueue.length > 0 || !state.selectedMoveName) return;
+
+      commitPlayerAction({
+
+        type: 'MOVE',
+
+        moveName: state.selectedMoveName,
+
+        megaWant: state.megaWant,
+
+        targetSide,
+
+        targetSlotPos
+
+      });
+
+    }
+
+
+
+    function selectBenchSwitch(benchTeamIdx) {
+
+      if (state.animating || state.promptQueue.length > 0) return;
+
+      const otherPos = state.selectingSlotPos === 0 ? 1 : 0;
+
+      const otherAct = state.pendingActions[otherPos];
+
+      if (otherAct && otherAct.type === 'SWITCH' && otherAct.toTeamIdx === benchTeamIdx) {
+
+        return;
+
+      }
+
+      state.megaWant = false;
+
+      commitPlayerAction({
+
+        type: 'SWITCH',
+
+        toTeamIdx: benchTeamIdx,
+
+        megaWant: false
+
+      });
+
+    }
+
+
+
+    function commitPlayerAction(actionObj) {
+
+      state.pendingActions[state.selectingSlotPos] = actionObj;
+
+      state.uiSubMode = 'MAIN';
+
+      state.selectedMoveName = null;
+
+      state.megaWant = false;
+
+
+
+      if (state.selectingSlotPos === 0) {
+
+        const s1 = state.activePlayerSlots[1] !== null ? state.playerTeam[state.activePlayerSlots[1]] : null;
+
+        if (s1 && !s1.fainted && !state.pendingActions[1]) {
+
+          state.selectingSlotPos = 1;
+
+          render();
+
+          return;
+
+        }
+
+      }
+
+
+
+      executeTurn();
+
+    }
+
+
+
+    function cancelBackToSlot0() {
+
+      state.pendingActions = [null, null];
+
+      state.uiSubMode = 'MAIN';
+
+      state.selectedMoveName = null;
+
+      state.megaWant = false;
+
+      const s0 = state.activePlayerSlots[0] !== null ? state.playerTeam[state.activePlayerSlots[0]] : null;
+
+      if (s0 && !s0.fainted) state.selectingSlotPos = 0;
+
+      render();
+
+    }
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 12. OPPONENT AI DECISION ENGINE
+
+    // ----------------------------------------------------------------------------
+
+    function generateEnemyActions() {
+
+      const actions = [];
+
+      state.activeEnemySlots.forEach((teamIdx, slotPos) => {
+
+        if (teamIdx === null) return;
+
+        const mon = state.enemyTeam[teamIdx];
+
+        if (!mon || mon.fainted) return;
+
+
+
+        const alivePlayerPositions = [0, 1].filter(p => {
+
+          const idx = state.activePlayerSlots[p];
+
+          return idx !== null && !state.playerTeam[idx].fainted;
+
+        });
+
+
+
+        if (alivePlayerPositions.length === 0) return;
+
+        let bestMove = mon.moves.find(m => !isMoveDisabledForMon(mon, m)) || mon.moves[0];
+
+        let bestTargetPos = alivePlayerPositions[0];
+
+        let bestScore = -999;
+
+
+
+        for (const mName of mon.moves) {
+
+          if (isMoveDisabledForMon(mon, mName)) continue;
+
+          const mv = MOVES[mName];
+
+          if (!mv) continue;
+
+
+
+          if (mv.protect) {
+
+            const score = mon.protectStreak === 0 && mon.hp < mon.maxHp * 0.55 ? 65 : 10;
+
+            if (score > bestScore) { bestScore = score; bestMove = mName; }
+
+            continue;
+
+          }
+
+          if (mv.tailwind && state.field.enemyTailwind === 0) {
+
+            if (85 > bestScore) { bestScore = 85; bestMove = mName; }
+
+            continue;
+
+          }
+
+          if (mv.firstTurnOnly && mon.turnsOnField > 0) continue;
+
+
+
+          for (const pPos of alivePlayerPositions) {
+
+            const targetMon = state.playerTeam[state.activePlayerSlots[pPos]];
+
+            let score = mv.pow || 50;
+
+            if (mv.pow > 0) {
+
+              const eff = getTypeEffectiveness(mv.type, targetMon.types);
+
+              const stab = mon.types.includes(mv.type) ? 1.5 : 1;
+
+              score = mv.pow * eff * stab;
+
+              if (mv.target === 'allFoes') score *= 1.35;
+
+              if (mv.priority > 0 && targetMon.hp < targetMon.maxHp * 0.35) score += 60;
+
+            } else if (mv.status && !targetMon.status) {
+
+              score = 70;
+
+            }
+
+            score += Math.random() * 20;
+
+            if (score > bestScore) {
+
+              bestScore = score;
+
+              bestMove = mName;
+
+              bestTargetPos = pPos;
+
+            }
+
+          }
+
+        }
+
+
+
+        const chosenMv = MOVES[bestMove];
+
+        actions.push({
+
+          side: 'enemy',
+
+          slotPos,
+
+          type: 'MOVE',
+
+          moveName: bestMove,
+
+          megaWant: canMonMegaEvolve(mon),
+
+          targetSide: chosenMv.target === 'self' || chosenMv.target === 'field' ? 'enemy' : 'player',
+
+          targetSlotPos: bestTargetPos
+
+        });
+
+      });
+
+      return actions;
+
+    }
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 13. TURN EXECUTION ENGINE
+
+    // ----------------------------------------------------------------------------
+
+    async function executeTurn() {
+
+      state.animating = true;
+
+      render();
+
+
+
+      [...state.playerTeam, ...state.enemyTeam].forEach(m => {
+
+        m.protected = false;
+
+        m.flinched = false;
+
+        m.helpingHand = false;
+
+        m.redirecting = false;
+
+      });
+
+
+
+      const allActions = [];
+
+
+
+      [0, 1].forEach(slotPos => {
+
+        const act = state.pendingActions[slotPos];
+
+        const tIdx = state.activePlayerSlots[slotPos];
+
+        if (act && tIdx !== null && !state.playerTeam[tIdx].fainted) {
+
+          allActions.push({ side: 'player', slotPos, ...act });
+
+        }
+
+      });
+
+
+
+      allActions.push(...generateEnemyActions());
+
+
+
+      // Step 1: Switches
+
+      const switchActions = allActions.filter(a => a.type === 'SWITCH');
+
+      for (const sw of switchActions) {
+
+        const actor = getActiveMon(sw.side, sw.slotPos);
+
+        if (actor && !actor.fainted) {
+
+          await performSwitch(sw.side, sw.slotPos, sw.toTeamIdx);
+
+        }
+
+      }
+
+
+
+      // Step 2: Requested Mega Evolutions
+
+      const moveActions = allActions.filter(a => a.type === 'MOVE');
+
+      for (const mvAct of moveActions) {
+
+        const actor = getActiveMon(mvAct.side, mvAct.slotPos);
+
+        if (actor && !actor.fainted && mvAct.megaWant && canMonMegaEvolve(actor)) {
+
+          await performMegaEvolution(mvAct.side, mvAct.slotPos, actor);
+
+        }
+
+      }
+
+
+
+      // Step 3: Sort & Execute Moves
+
+      moveActions.sort((a, b) => {
+
+        const mA = MOVES[a.moveName] || { priority: 0 };
+
+        const mB = MOVES[b.moveName] || { priority: 0 };
+
+        const prioA = mA.priority || 0;
+
+        const prioB = mB.priority || 0;
+
+        if (prioA !== prioB) return prioB - prioA;
+
+
+
+        const monA = getActiveMon(a.side, a.slotPos);
+
+        const monB = getActiveMon(b.side, b.slotPos);
+
+        const speA = monA ? getEffectiveSpeed(monA, a.side) : 0;
+
+        const speB = monB ? getEffectiveSpeed(monB, b.side) : 0;
+
+
+
+        if (state.field.trickRoom > 0) return speA - speB;
+
+        return speB - speA;
+
+      });
+
+
+
+      for (const act of moveActions) {
+
+        const actor = getActiveMon(act.side, act.slotPos);
+
+        // If this Pokémon fainted earlier in the turn, its queued move will not execute
+
+        if (!actor || actor.fainted || actor.hp <= 0) continue;
+
+
+
+        await performMove(act, actor);
+
+        // Clear any fainted slots immediately so they stay empty for the rest of the turn
+
+        clearFaintedActiveSlots();
+
+        if (checkBattleEnd()) return;
+
+      }
+
+
+
+      await handleEndOfTurn();
+
+      clearFaintedActiveSlots();
+
+      if (checkBattleEnd()) return;
+
+
+
+      // Only send out replacements (enemy reserves & player bench prompts) after the round completely ends
+
+      await handleFaintReplacements();
+
+      if (checkBattleEnd()) return;
+
+
+
+      [0, 1].forEach(pos => {
+
+        const pm = getActiveMon('player', pos);
+
+        const em = getActiveMon('enemy', pos);
+
+        if (pm && !pm.fainted) pm.turnsOnField++;
+
+        if (em && !em.fainted) em.turnsOnField++;
+
+      });
+
+
+
+      state.turn++;
+
+      state.animating = false;
+
+      prepareCommandPhase();
+
+    }
+
+
+
+    function clearFaintedActiveSlots() {
+
+      let changed = false;
+
+      for (const slotPos of [0, 1]) {
+
+        const eIdx = state.activeEnemySlots[slotPos];
+
+        if (eIdx !== null && state.enemyTeam[eIdx]?.fainted) {
+
+          state.activeEnemySlots[slotPos] = null;
+
+          changed = true;
+
+        }
+
+        const pIdx = state.activePlayerSlots[slotPos];
+
+        if (pIdx !== null && state.playerTeam[pIdx]?.fainted) {
+
+          state.activePlayerSlots[slotPos] = null;
+
+          changed = true;
+
+        }
+
+      }
+
+      if (changed) render();
+
+    }
+
+
+
+    function getActiveMon(side, slotPos) {
+
+      if (side === 'player') {
+
+        const idx = state.activePlayerSlots[slotPos];
+
+        return idx !== null ? state.playerTeam[idx] : null;
+
+      } else {
+
+        const idx = state.activeEnemySlots[slotPos];
+
+        return idx !== null ? state.enemyTeam[idx] : null;
+
+      }
+
+    }
+
+
+
+    async function performSwitch(side, slotPos, toTeamIdx) {
+
+      const team = side === 'player' ? state.playerTeam : state.enemyTeam;
+
+      const slots = side === 'player' ? state.activePlayerSlots : state.activeEnemySlots;
+
+      const oldIdx = slots[slotPos];
+
+      const oldMon = oldIdx !== null ? team[oldIdx] : null;
+
+      const newMon = team[toTeamIdx];
+
+
+
+      if (!newMon || newMon.fainted) return;
+
+
+
+      if (oldMon && !oldMon.fainted) {
+
+        addLog(`${side === 'player' ? 'You withdrew' : `${state.trainer.name} withdrew`} ${oldMon.name}!`, 'text-slate-300');
+
+        oldMon.stages = { atk: 0, def: 0, spa: 0, spd: 0, spe: 0, acc: 0 };
+
+        oldMon.protectStreak = 0;
+
+        oldMon.choiceLockedMove = null;
+
+        oldMon.encoredMove = null;
+
+        oldMon.encoreTurns = 0;
+
+        if (oldMon.ability === 'Regenerator') {
+
+          oldMon.hp = Math.min(oldMon.maxHp, oldMon.hp + Math.floor(oldMon.maxHp / 3));
+
+        }
+
+        await wait(1450);
+
+      }
+
+
+
+      slots[slotPos] = toTeamIdx;
+
+      newMon.choiceLockedMove = null;
+
+      newMon.encoredMove = null;
+
+      newMon.encoreTurns = 0;
+
+      newMon.revealed = true;
+
+      triggerAnim(`${side}-${slotPos}`, 'anim-sendout');
+
+      addLog(
+
+        side === 'player'
+
+          ? `Go! ${newMon.name}!`
+
+          : `${state.trainer.name} sent out reserve ${newMon.name}!`,
+
+        side === 'player' ? 'text-emerald-300 font-semibold' : 'text-sky-300 font-semibold'
+
+      );
+
+      await wait(1600);
+
+      await triggerEntryAbility(side, slotPos, newMon);
+
+    }
+
+
+
+    async function performMove(act, actor) {
+
+      const move = MOVES[act.moveName];
+
+      if (!move) return;
+
+
+
+      if (isChoiceItem(actor.item) && actor.choiceLockedMove && actor.moves.includes(actor.choiceLockedMove)) {
+
+        act.moveName = actor.choiceLockedMove;
+
+      } else if (actor.encoredMove && actor.encoreTurns > 0 && actor.moves.includes(actor.encoredMove)) {
+
+        act.moveName = actor.encoredMove;
+
+      }
+
+      const activeMove = MOVES[act.moveName] || move;
+
+
+
+      if (actor.flinched) {
+
+        addLog(`${actor.name} flinched and couldn't move!`, 'text-amber-300');
+
+        actor.protectStreak = 0;
+
+        await wait(1500);
+
+        return;
+
+      }
+
+      if (actor.status === 'slp') {
+
+        if (actor.sleepTurns > 0) {
+
+          actor.sleepTurns--;
+
+          addLog(`${actor.name} is fast asleep (SLP 睡眠).`, 'text-slate-400');
+
+          await wait(1500);
+
+          return;
+
+        } else {
+
+          actor.status = null;
+
+          addLog(`${actor.name} woke up!`, 'text-emerald-300');
+
+        }
+
+      }
+
+      if (actor.status === 'frz') {
+
+        if (Math.random() < 0.25 || activeMove.type === 'Fire') {
+
+          actor.status = null;
+
+          addLog(`${actor.name} thawed out!`, 'text-orange-300');
+
+        } else {
+
+          addLog(`${actor.name} is frozen solid (FRZ 冰凍)!`, 'text-cyan-300');
+
+          await wait(1500);
+
+          return;
+
+        }
+
+      }
+
+      if (actor.status === 'par' && Math.random() < 0.25) {
+
+        addLog(`${actor.name} is paralyzed (PAR 麻痺)! It can't move!`, 'text-yellow-300');
+
+        await wait(1500);
+
+        return;
+
+      }
+
+      if (activeMove.firstTurnOnly && actor.turnsOnField > 0) {
+
+        addLog(`${actor.name} used ${act.moveName}, but it failed!`, 'text-slate-400');
+
+        await wait(1400);
+
+        return;
+
+      }
+
+
+
+      if (isChoiceItem(actor.item) && !actor.choiceLockedMove) {
+
+        actor.choiceLockedMove = act.moveName;
+
+      }
+
+
+
+      triggerAnim(`${act.side}-${act.slotPos}`, 'anim-lunge');
+
+      addLog(`${actor.name} used ${act.moveName}!`, act.side === 'player' ? 'text-white font-semibold' : 'text-rose-200 font-semibold');
+
+      await wait(1650);
+
+
+
+      if (activeMove.protect) {
+
+        const successChance = Math.pow(0.5, actor.protectStreak);
+
+        if (Math.random() < successChance) {
+
+          actor.protected = true;
+
+          actor.protectStreak++;
+
+          addLog(`${actor.name} protected itself!`, 'text-cyan-300');
+
+        } else {
+
+          actor.protectStreak = 0;
+
+          addLog(`But it failed!`, 'text-slate-400');
+
+        }
+
+        await wait(1500);
+
+        return;
+
+      } else {
+
+        actor.protectStreak = 0;
+
+      }
+
+
+
+      if (activeMove.target === 'self' || activeMove.target === 'field') {
+
+        if (activeMove.tailwind) {
+
+          if (act.side === 'player') state.field.playerTailwind = 4;
+
+          else state.field.enemyTailwind = 4;
+
+          addLog(`The Tailwind blew from behind ${act.side === 'player' ? 'your' : 'the opposing'} team!`, 'text-sky-300');
+
+        }
+
+        if (activeMove.trickRoom) {
+
+          state.field.trickRoom = state.field.trickRoom > 0 ? 0 : 5;
+
+          addLog(state.field.trickRoom > 0 ? `${actor.name} twisted the dimensions!` : `The twisted dimensions returned to normal!`, 'text-purple-300');
+
+        }
+
+        if (activeMove.redirect) {
+
+          actor.redirecting = true;
+
+          addLog(`${actor.name} became the center of attention!`, 'text-amber-300');
+
+        }
+
+        if (activeMove.boost) {
+
+          for (const [st, val] of Object.entries(activeMove.boost)) modifyStage(actor, st, val);
+
+        }
+
+        if (activeMove.heal) {
+
+          const healAmt = Math.floor(actor.maxHp * activeMove.heal);
+
+          actor.hp = Math.min(actor.maxHp, actor.hp + healAmt);
+
+          showPopup(`${act.side}-${act.slotPos}`, `+${healAmt} HP`, 'text-emerald-300');
+
+          addLog(`${actor.name} restored its HP!`, 'text-emerald-300');
+
+        }
+
+        if (activeMove.teamHeal) {
+
+          const teamSlots = act.side === 'player' ? state.activePlayerSlots : state.activeEnemySlots;
+
+          teamSlots.forEach((idx, p) => {
+
+            const m = idx !== null ? (act.side === 'player' ? state.playerTeam[idx] : state.enemyTeam[idx]) : null;
+
+            if (m && !m.fainted) {
+
+              const healAmt = Math.floor(m.maxHp * activeMove.teamHeal);
+
+              m.hp = Math.min(m.maxHp, m.hp + healAmt);
+
+              showPopup(`${act.side}-${p}`, `+${healAmt} HP`, 'text-emerald-300');
+
+            }
+
+          });
+
+          addLog(`${actor.name} healed its team!`, 'text-emerald-300');
+
+        }
+
+        if (activeMove.weather) {
+
+          state.field.weather = activeMove.weather;
+
+          state.field.weatherTurns = 5;
+
+          addLog(`It started to snow!`, 'text-cyan-200');
+
+        }
+
+        if (activeMove.screens) {
+
+          addLog(`${actor.name} raised a protective barrier for its team!`, 'text-cyan-300');
+
+        }
+
+        if (activeMove.pivot) {
+
+          await handlePivotSwitch(act.side, act.slotPos);
+
+        }
+
+        await wait(1550);
+
+        return;
+
+      }
+
+
+
+      if (activeMove.target === 'ally') {
+
+        const ally = getActiveMon(act.side, act.targetSlotPos);
+
+        if (ally && !ally.fainted) {
+
+          if (activeMove.helpingHand) {
+
+            ally.helpingHand = true;
+
+            addLog(`${actor.name} is ready to help ${ally.name}!`, 'text-emerald-300');
+
+          }
+
+        } else {
+
+          addLog(`But there was no partner left!`, 'text-slate-400');
+
+        }
+
+        await wait(1500);
+
+        return;
+
+      }
+
+
+
+      const targets = resolveMoveTargets(act, activeMove);
+
+      if (targets.length === 0) {
+
+        addLog(`But there was no target!`, 'text-slate-400');
+
+        await wait(1400);
+
+        return;
+
+      }
+
+
+
+      const isSpread = targets.length > 1;
+
+      let hitAny = false;
+
+
+
+      for (const tgt of targets) {
+
+        const defMon = tgt.mon;
+
+        if (!defMon || defMon.fainted) continue;
+
+
+
+        if (activeMove.pollenPuff && tgt.side === act.side) {
+
+          const healAmt = Math.floor(defMon.maxHp * 0.5);
+
+          defMon.hp = Math.min(defMon.maxHp, defMon.hp + healAmt);
+
+          showPopup(`${tgt.side}-${tgt.slotPos}`, `+${healAmt} HP`, 'text-emerald-300');
+
+          addLog(`${defMon.name} restored HP from Pollen Puff!`, 'text-emerald-300');
+
+          await wait(1550);
+
+          continue;
+
+        }
+
+
+
+        if (defMon.protected && !activeMove.bypassProtect && actor.ability !== 'Unseen Fist') {
+
+          addLog(`${defMon.name} protected itself!`, 'text-cyan-300');
+
+          await wait(1450);
+
+          continue;
+
+        }
+
+
+
+        if (Math.random() * 100 > activeMove.acc) {
+
+          addLog(`${actor.name}'s attack missed ${defMon.name}!`, 'text-slate-400');
+
+          await wait(1450);
+
+          continue;
+
+        }
+
+
+
+        hitAny = true;
+
+
+
+        if (activeMove.cat === 'Status') {
+
+          if (activeMove.status) applyStatus(defMon, activeMove.status);
+
+          if (activeMove.dropDual) {
+
+            modifyStage(defMon, 'atk', -1);
+
+            modifyStage(defMon, 'spa', -1);
+
+          }
+
+          if (activeMove.encore) {
+
+            if (defMon.item?.name === 'Mental Herb') {
+
+              defMon.item = null;
+
+              addLog(`${defMon.name} cured its Encore with Mental Herb!`, 'text-emerald-300');
+
+            } else {
+
+              const lastUsed = defMon.choiceLockedMove || defMon.moves[0];
+
+              defMon.encoredMove = lastUsed;
+
+              defMon.encoreTurns = 3;
+
+              addLog(`${defMon.name} must do an encore of ${lastUsed}!`, 'text-amber-300');
+
+            }
+
+          }
+
+          await wait(1550);
+
+          continue;
+
+        }
+
+
+
+        const dmgResult = calculateDamage(actor, defMon, activeMove, act.side, isSpread);
+
+        if (dmgResult.effectiveness === 0) {
+
+          addLog(`It doesn't affect ${defMon.name}...`, 'text-slate-400');
+
+          await wait(1450);
+
+          continue;
+
+        }
+
+
+
+        triggerAnim(`${tgt.side}-${tgt.slotPos}`, 'anim-hit');
+
+        showPopup(`${tgt.side}-${tgt.slotPos}`, `-${dmgResult.damage} HP`, dmgResult.effectiveness > 1 ? 'text-amber-300' : 'text-rose-300');
+
+        defMon.hp = Math.max(0, defMon.hp - dmgResult.damage);
+
+
+
+        let effText = '';
+
+        if (dmgResult.effectiveness > 1) effText = " It's super effective!";
+
+        else if (dmgResult.effectiveness < 1) effText = " It's not very effective...";
+
+        if (dmgResult.crit) effText += ' Critical hit!';
+
+
+
+        addLog(`${defMon.name} took ${dmgResult.damage} dmg!${effText}`, dmgResult.effectiveness > 1 ? 'text-amber-300' : 'text-slate-200');
+
+        await wait(1750);
+
+
+
+        if (defMon.hp > 0 && dmgResult.effectiveness > 1 && defMon.item?.name === 'Weakness Policy') {
+
+          defMon.item = null;
+
+          addLog(`${defMon.name}'s Weakness Policy activated!`, 'text-amber-300 font-bold');
+
+          modifyStage(defMon, 'atk', 2);
+
+          modifyStage(defMon, 'spa', 2);
+
+        }
+
+
+
+        if (defMon.hp > 0 && defMon.hp <= defMon.maxHp * 0.5 && defMon.item?.name === 'Sitrus Berry') {
+
+          const healAmt = Math.floor(defMon.maxHp * 0.25);
+
+          defMon.hp = Math.min(defMon.maxHp, defMon.hp + healAmt);
+
+          defMon.item = null;
+
+          showPopup(`${tgt.side}-${tgt.slotPos}`, `+${healAmt} HP`, 'text-emerald-300');
+
+          addLog(`${defMon.name} ate its Sitrus Berry and restored HP!`, 'text-emerald-300');
+
+        }
+
+
+
+        if (activeMove.sound && actor.item?.name === 'Throat Spray') {
+
+          actor.item = null;
+
+          addLog(`${actor.name}'s Throat Spray raised its Sp. Atk!`, 'text-cyan-300');
+
+          modifyStage(actor, 'spa', 1);
+
+        }
+
+
+
+        if (activeMove.drain) {
+
+          const heal = Math.max(1, Math.floor(dmgResult.damage * activeMove.drain));
+
+          actor.hp = Math.min(actor.maxHp, actor.hp + heal);
+
+          showPopup(`${act.side}-${act.slotPos}`, `+${heal} HP`, 'text-emerald-300');
+
+          addLog(`${actor.name} drained energy from ${defMon.name}!`, 'text-emerald-300');
+
+        }
+
+        if (activeMove.recoil) {
+
+          const rec = Math.max(1, Math.floor(dmgResult.damage * activeMove.recoil));
+
+          actor.hp = Math.max(0, actor.hp - rec);
+
+          showPopup(`${act.side}-${act.slotPos}`, `-${rec} Recoil`, 'text-rose-400');
+
+          addLog(`${actor.name} was damaged by recoil!`, 'text-rose-300');
+
+        }
+
+        if (activeMove.selfBoost && !actor.fainted) {
+
+          modifyStage(actor, activeMove.selfBoost.stat, activeMove.selfBoost.stage);
+
+        }
+
+
+
+        if (defMon.hp > 0 && defMon.item?.name !== 'Covert Cloak') {
+
+          if (activeMove.flinch && Math.random() * 100 < activeMove.flinch) {
+
+            defMon.flinched = true;
+
+          }
+
+          if (activeMove.effect && Math.random() * 100 < activeMove.effect.chance) {
+
+            if (activeMove.effect.status) applyStatus(defMon, activeMove.effect.status);
+
+            if (activeMove.effect.stat) modifyStage(defMon, activeMove.effect.stat, activeMove.effect.stage);
+
+          }
+
+        }
+
+
+
+        if (defMon.hp === 0) {
+
+          defMon.fainted = true;
+
+          triggerAnim(`${tgt.side}-${tgt.slotPos}`, 'anim-faint');
+
+          addLog(`${defMon.name} fainted!`, 'text-rose-400 font-bold');
+
+          await wait(1650);
+
+        }
+
+        if (actor.hp === 0 && !actor.fainted) {
+
+          actor.fainted = true;
+
+          triggerAnim(`${act.side}-${act.slotPos}`, 'anim-faint');
+
+          addLog(`${actor.name} fainted!`, 'text-rose-400 font-bold');
+
+          await wait(1650);
+
+        }
+
+      }
+
+
+
+      if (hitAny && activeMove.selfDrop && !actor.fainted) {
+
+        modifyStage(actor, activeMove.selfDrop.stat, activeMove.selfDrop.stage);
+
+      }
+
+
+
+      if (hitAny && activeMove.pivot && !actor.fainted) {
+
+        await handlePivotSwitch(act.side, act.slotPos);
+
+      }
+
+    }
+
+
+
+    function resolveMoveTargets(act, move) {
+
+      const oppSide = act.side === 'player' ? 'enemy' : 'player';
+
+      const list = [];
+
+
+
+      if (move.target === 'allFoes') {
+
+        [0, 1].forEach(p => {
+
+          const m = getActiveMon(oppSide, p);
+
+          if (m && !m.fainted) list.push({ side: oppSide, slotPos: p, mon: m });
+
+        });
+
+      } else if (move.target === 'allOthers') {
+
+        [0, 1].forEach(p => {
+
+          const m = getActiveMon(oppSide, p);
+
+          if (m && !m.fainted) list.push({ side: oppSide, slotPos: p, mon: m });
+
+        });
+
+        const allyPos = act.slotPos === 0 ? 1 : 0;
+
+        const ally = getActiveMon(act.side, allyPos);
+
+        if (ally && !ally.fainted) list.push({ side: act.side, slotPos: allyPos, mon: ally });
+
+      } else {
+
+        let chosenPos = act.targetSlotPos;
+
+        if (act.targetSide === oppSide) {
+
+          const redirectPos = [0, 1].find(p => {
+
+            const m = getActiveMon(oppSide, p);
+
+            return m && !m.fainted && m.redirecting;
+
+          });
+
+          if (redirectPos !== undefined) chosenPos = redirectPos;
+
+        }
+
+
+
+        let targetMon = getActiveMon(act.targetSide, chosenPos);
+
+        if ((!targetMon || targetMon.fainted) && act.targetSide === oppSide) {
+
+          const fallbackPos = chosenPos === 0 ? 1 : 0;
+
+          const fallbackMon = getActiveMon(oppSide, fallbackPos);
+
+          if (fallbackMon && !fallbackMon.fainted) {
+
+            chosenPos = fallbackPos;
+
+            targetMon = fallbackMon;
+
+          }
+
+        }
+
+        if (targetMon && !targetMon.fainted) {
+
+          list.push({ side: act.targetSide, slotPos: chosenPos, mon: targetMon });
+
+        }
+
+      }
+
+      return list;
+
+    }
+
+
+
+    function calculateDamage(atkMon, defMon, move, atkSide, isSpread) {
+
+      let pow = move.pow;
+
+      if (move.hpScale) pow = Math.max(1, Math.floor(150 * (atkMon.hp / atkMon.maxHp)));
+
+      if (move.facadeBoost && atkMon.status) pow *= 2;
+
+
+
+      let effMoveType = move.type;
+
+      if (move.type === 'Normal' && atkMon.ability === 'Aerilate') { effMoveType = 'Flying'; pow = Math.floor(pow * 1.2); }
+
+      if (move.type === 'Normal' && atkMon.ability === 'Pixilate') { effMoveType = 'Fairy'; pow = Math.floor(pow * 1.2); }
+
+
+
+      const isPhys = move.cat === 'Physical';
+
+      let atkStat = isPhys
+
+        ? (move.useDef ? atkMon.baseStats.def * getStageMultiplier(atkMon.stages.def) : atkMon.baseStats.atk * getStageMultiplier(atkMon.stages.atk))
+
+        : atkMon.baseStats.spa * getStageMultiplier(atkMon.stages.spa);
+
+
+
+      let defStat = isPhys
+
+        ? defMon.baseStats.def * getStageMultiplier(defMon.stages.def)
+
+        : defMon.baseStats.spd * getStageMultiplier(defMon.stages.spd);
+
+
+
+      if (isPhys && atkMon.item?.name === 'Choice Band') atkStat *= 1.5;
+
+      if (!isPhys && atkMon.item?.name === 'Choice Specs') atkStat *= 1.5;
+
+      if (!isPhys && defMon.item?.name === 'Assault Vest') defStat *= 1.5;
+
+      if (atkMon.ability === 'Huge Power' && isPhys) atkStat *= 2;
+
+      if (atkMon.status === 'brn' && isPhys && atkMon.ability !== 'Guts') atkStat *= 0.5;
+
+      if (atkMon.status && atkMon.ability === 'Guts' && isPhys) atkStat *= 1.5;
+
+
+
+      let eff = getTypeEffectiveness(effMoveType, defMon.types);
+
+      if (move.seWater && defMon.types.includes('Water')) eff *= 2;
+
+
+
+      const ignoresAbility = atkMon.ability === 'Mold Breaker';
+
+      if (!ignoresAbility) {
+
+        if (effMoveType === 'Water' && (defMon.ability === 'Water Absorb' || defMon.ability === 'Storm Drain')) eff = 0;
+
+        if (effMoveType === 'Fire' && defMon.ability === 'Flash Fire') eff = 0;
+
+        if (effMoveType === 'Electric' && defMon.ability === 'Lightning Rod') eff = 0;
+
+        if (effMoveType === 'Ground' && defMon.ability === 'Levitate') eff = 0;
+
+      }
+
+      if (effMoveType === 'Ground' && defMon.types.includes('Flying')) eff = 0;
+
+
+
+      if (eff === 0) return { damage: 0, effectiveness: 0, crit: false };
+
+
+
+      let baseDmg = (((2 * 50 / 5 + 2) * pow * (atkStat / defStat)) / 50) + 2;
+
+      if (isSpread) baseDmg *= 0.75;
+
+
+
+      if (atkMon.types.includes(effMoveType)) {
+
+        baseDmg *= atkMon.ability === 'Adaptability' ? 2.0 : 1.5;
+
+      }
+
+
+
+      if (state.field.weather === 'Rain') {
+
+        if (effMoveType === 'Water') baseDmg *= 1.5;
+
+        if (effMoveType === 'Fire') baseDmg *= 0.5;
+
+      }
+
+      if (state.field.weather === 'Sun') {
+
+        if (effMoveType === 'Fire') baseDmg *= 1.5;
+
+        if (effMoveType === 'Water') baseDmg *= 0.5;
+
+      }
+
+      if (state.field.terrain === 'Electric' && effMoveType === 'Electric') baseDmg *= 1.3;
+
+      if (state.field.terrain === 'Grassy' && effMoveType === 'Grass') baseDmg *= 1.3;
+
+      if (state.field.terrain === 'Psychic' && effMoveType === 'Psychic') baseDmg *= 1.3;
+
+
+
+      if (atkMon.helpingHand) baseDmg *= 1.5;
+
+      if (atkMon.item?.name === 'Life Orb') baseDmg *= 1.3;
+
+      if (atkMon.item?.name === 'Charcoal' && effMoveType === 'Fire') baseDmg *= 1.2;
+
+      if (atkMon.item?.name === 'Mystic Water' && effMoveType === 'Water') baseDmg *= 1.2;
+
+      if (atkMon.item?.name === 'Miracle Seed' && effMoveType === 'Grass') baseDmg *= 1.2;
+
+      if (atkMon.item?.name === 'Magnet' && effMoveType === 'Electric') baseDmg *= 1.2;
+
+      if (atkMon.item?.name === 'Pixie Plate' && effMoveType === 'Fairy') baseDmg *= 1.2;
+
+      if (atkMon.item?.name === 'Expert Belt' && eff > 1) baseDmg *= 1.2;
+
+      if (move.seBoost && eff > 1) baseDmg *= 1.33;
+
+      if (atkMon.ability === 'Parental Bond') baseDmg *= 1.25;
+
+      if (atkMon.ability === 'Tough Claws' && isPhys) baseDmg *= 1.3;
+
+
+
+      const crit = move.crit || (Math.random() < (move.highCrit ? 0.125 : 0.0417));
+
+      if (crit) baseDmg *= 1.5;
+
+
+
+      baseDmg *= (0.85 + Math.random() * 0.15);
+
+      let finalDmg = Math.max(1, Math.floor(baseDmg * eff));
+
+
+
+      if (defMon.hp === defMon.maxHp && finalDmg >= defMon.hp && defMon.item?.name === 'Focus Sash') {
+
+        finalDmg = defMon.hp - 1;
+
+        defMon.item = null;
+
+        addLog(`${defMon.name} hung on using its Focus Sash!`, 'text-amber-300');
+
+      }
+
+
+
+      return { damage: finalDmg, effectiveness: eff, crit };
+
+    }
+
+
+
+    function applyStatus(mon, status) {
+
+      if (mon.status || status === 'cnf') return;
+
+      if (status === 'brn' && mon.types.includes('Fire')) return;
+
+      if (status === 'psn' && (mon.types.includes('Poison') || mon.types.includes('Steel'))) return;
+
+      if (status === 'par' && mon.types.includes('Electric')) return;
+
+      if (status === 'slp' && (state.field.terrain === 'Electric' || mon.item?.name === 'Safety Goggles')) return;
+
+
+
+      mon.status = status;
+
+      if (status === 'slp') mon.sleepTurns = 2;
+
+      const labels = {
+
+        brn: 'was burned (BRN 灼傷)!',
+
+        par: 'is paralyzed (PAR 麻痺)!',
+
+        psn: 'was poisoned (PSN 中毒)!',
+
+        slp: 'fell asleep (SLP 睡眠)!',
+
+        frz: 'was frozen solid (FRZ 冰凍)!'
+
+      };
+
+      addLog(`${mon.name} ${labels[status]}`, 'text-amber-300');
+
+
+
+      if (mon.item?.name === 'Lum Berry') {
+
+        mon.status = null;
+
+        mon.item = null;
+
+        addLog(`${mon.name} ate its Lum Berry and cured its status!`, 'text-emerald-300');
+
+      }
+
+    }
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 14. AUTOMATIC OPPONENT REPLACEMENTS & PLAYER INTERACTIVE PROMPTS
+
+    // ----------------------------------------------------------------------------
+
+    function getAvailableBenchIndices(side) {
+
+      const team = side === 'player' ? state.playerTeam : state.enemyTeam;
+
+      const activeSlots = side === 'player' ? state.activePlayerSlots : state.activeEnemySlots;
+
+      const avail = [];
+
+      team.forEach((mon, idx) => {
+
+        if (!mon.fainted && !activeSlots.includes(idx)) avail.push(idx);
+
+      });
+
+      return avail;
+
+    }
+
+
+
+    async function handleFaintReplacements() {
+
+      for (const slotPos of [0, 1]) {
+
+        const eIdx = state.activeEnemySlots[slotPos];
+
+        const eMon = eIdx !== null ? state.enemyTeam[eIdx] : null;
+
+        if (eIdx === null || (eMon && eMon.fainted)) {
+
+          const bench = getAvailableBenchIndices('enemy');
+
+          if (bench.length > 0) {
+
+            const nextIdx = bench[0];
+
+            state.activeEnemySlots[slotPos] = nextIdx;
+
+            const replacement = state.enemyTeam[nextIdx];
+
+            replacement.revealed = true;
+
+            triggerAnim(`enemy-${slotPos}`, 'anim-sendout');
+
+            addLog(
+
+              `${state.trainer.name} sent out reserve ${replacement.name}! (${bench.length - 1} hidden reserve left)`,
+
+              'text-sky-300 font-bold'
+
+            );
+
+            await wait(1600);
+
+            await triggerEntryAbility('enemy', slotPos, replacement);
+
+          } else {
+
+            state.activeEnemySlots[slotPos] = null;
+
+          }
+
+        }
+
+      }
+
+
+
+      for (const slotPos of [0, 1]) {
+
+        const pIdx = state.activePlayerSlots[slotPos];
+
+        const pMon = pIdx !== null ? state.playerTeam[pIdx] : null;
+
+        if (pIdx === null || (pMon && pMon.fainted)) {
+
+          const bench = getAvailableBenchIndices('player');
+
+          if (bench.length > 0) {
+
+            await promptPlayerReplacement(slotPos, 'faint');
+
+          } else {
+
+            state.activePlayerSlots[slotPos] = null;
+
+          }
+
+        }
+
+      }
+
+    }
+
+
+
+    async function handlePivotSwitch(side, slotPos) {
+
+      const bench = getAvailableBenchIndices(side);
+
+      if (bench.length === 0) return;
+
+
+
+      if (side === 'enemy') {
+
+        await performSwitch('enemy', slotPos, bench[0]);
+
+      } else {
+
+        await promptPlayerReplacement(slotPos, 'pivot');
+
+      }
+
+    }
+
+
+
+    function promptPlayerReplacement(slotPos, reason) {
+
+      return new Promise(resolve => {
+
+        state.promptQueue.push({ side: 'player', slotPos, reason, resolve });
+
+        render();
+
+      });
+
+    }
+
+
+
+    async function confirmPromptSwitch(toTeamIdx) {
+
+      const prompt = state.promptQueue.shift();
+
+      if (!prompt) return;
+
+      render();
+
+      await performSwitch('player', prompt.slotPos, toTeamIdx);
+
+      prompt.resolve();
+
+    }
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 15. END OF TURN & WIN/LOSS RESOLUTION
+
+    // ----------------------------------------------------------------------------
+
+    async function handleEndOfTurn() {
+
+      if (state.field.weather) {
+
+        state.field.weatherTurns--;
+
+        if (state.field.weatherTurns <= 0) {
+
+          addLog(`The ${state.field.weather.toLowerCase()} subsided.`, 'text-slate-400');
+
+          state.field.weather = null;
+
+        } else if (state.field.weather === 'Sand') {
+
+          for (const side of ['player', 'enemy']) {
+
+            for (const pos of [0, 1]) {
+
+              const m = getActiveMon(side, pos);
+
+              if (m && !m.fainted && !m.types.some(t => ['Rock','Ground','Steel'].includes(t)) && m.item?.name !== 'Safety Goggles') {
+
+                const dmg = Math.max(1, Math.floor(m.maxHp / 16));
+
+                m.hp = Math.max(0, m.hp - dmg);
+
+                addLog(`${m.name} is buffeted by the sandstorm!`, 'text-amber-300');
+
+                if (m.hp === 0) { m.fainted = true; addLog(`${m.name} fainted!`, 'text-rose-400 font-bold'); }
+
+              }
+
+            }
+
+          }
+
+        }
+
+      }
+
+
+
+      if (state.field.terrain) {
+
+        state.field.terrainTurns--;
+
+        if (state.field.terrainTurns <= 0) {
+
+          addLog(`The ${state.field.terrain.toLowerCase()} terrain disappeared.`, 'text-slate-400');
+
+          state.field.terrain = null;
+
+        }
+
+      }
+
+
+
+      if (state.field.playerTailwind > 0) state.field.playerTailwind--;
+
+      if (state.field.enemyTailwind > 0) state.field.enemyTailwind--;
+
+      if (state.field.trickRoom > 0) state.field.trickRoom--;
+
+
+
+      for (const side of ['player', 'enemy']) {
+
+        for (const pos of [0, 1]) {
+
+          const m = getActiveMon(side, pos);
+
+          if (!m || m.fainted) continue;
+
+
+
+          if (m.ability === 'Speed Boost') {
+
+            modifyStage(m, 'spe', 1);
+
+          }
+
+          if (m.encoreTurns > 0) {
+
+            m.encoreTurns--;
+
+            if (m.encoreTurns <= 0) {
+
+              m.encoredMove = null;
+
+              addLog(`${m.name}'s encore ended!`, 'text-slate-400');
+
+            }
+
+          }
+
+          if (m.item?.name === 'Leftovers' && m.hp < m.maxHp) {
+
+            m.hp = Math.min(m.maxHp, m.hp + Math.max(1, Math.floor(m.maxHp / 16)));
+
+            addLog(`${m.name} restored HP with Leftovers!`, 'text-emerald-300');
+
+          }
+
+          if (m.item?.name === 'Black Sludge' && m.types.includes('Poison') && m.hp < m.maxHp) {
+
+            m.hp = Math.min(m.maxHp, m.hp + Math.max(1, Math.floor(m.maxHp / 16)));
+
+            addLog(`${m.name} restored HP with Black Sludge!`, 'text-emerald-300');
+
+          }
+
+          if (state.field.terrain === 'Grassy' && m.hp < m.maxHp) {
+
+            m.hp = Math.min(m.maxHp, m.hp + Math.max(1, Math.floor(m.maxHp / 16)));
+
+          }
+
+          if (m.status === 'brn' || m.status === 'psn') {
+
+            const dmg = Math.max(1, Math.floor(m.maxHp / 8));
+
+            m.hp = Math.max(0, m.hp - dmg);
+
+            addLog(`${m.name} is hurt by its ${m.status === 'brn' ? 'burn (BRN)' : 'poison (PSN)'}!`, 'text-rose-300');
+
+            if (m.hp === 0) {
+
+              m.fainted = true;
+
+              triggerAnim(`${side}-${pos}`, 'anim-faint');
+
+              addLog(`${m.name} fainted!`, 'text-rose-400 font-bold');
+
+            }
+
+          }
+
+        }
+
+      }
+
+      await wait(1400);
+
+    }
+
+
+
+    function checkBattleEnd() {
+
+      const playerAlive = state.playerTeam.some(m => !m.fainted);
+
+      const enemyAlive = state.enemyTeam.some(m => !m.fainted);
+
+
+
+      if (!enemyAlive) {
+
+        state.streak++;
+
+        state.animating = false;
+
+        state.selectedSwapEnemyIdx = null;
+
+        state.screen = 'SWAP';
+
+        render();
+
+        return true;
+
+      }
+
+      if (!playerAlive) {
+
+        state.animating = false;
+
+        state.screen = 'DEFEAT';
+
+        render();
+
+        return true;
+
+      }
+
+      return false;
+
+    }
+
+
+
+    function executePostBattleSwap(playerIdx) {
+
+      if (state.selectedSwapEnemyIdx === null) return;
+
+      const incomingEnemyMon = state.enemyTeam[state.selectedSwapEnemyIdx];
+
+      if (!incomingEnemyMon || !incomingEnemyMon.revealed) return;
+
+
+
+      const cloned = JSON.parse(JSON.stringify(incomingEnemyMon));
+
+      cloned.uid = `player_${cloned.baseName}_${Math.random().toString(36).slice(2, 7)}`;
+
+      cloned.revealed = true;
+
+      state.playerTeam[playerIdx] = cloned;
+
+      startNextBattle();
+
+    }
+
+
+
+    // ----------------------------------------------------------------------------
+
+    // 16. UI RENDERING COMPONENTS
+
+    // ----------------------------------------------------------------------------
+
+    function renderTypeBadge(type) {
+
+      const bg = TYPE_COLORS[type] || '#64748b';
+
+      return `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider text-white shadow-sm" style="background:${bg}">${type}</span>`;
+
+    }
+
+
+
+    function renderPokeballStrip(team, isEnemy = false) {
+
+      return `
+
+        <div class="flex items-center gap-1.5" title="${isEnemy ? 'Opponent 4-Pokémon Squad (Hidden reserves marked ?)' : 'Your 4-Pokémon Squad'}">
+
+          ${team.map((mon, idx) => {
+
+            if (mon.fainted) {
+
+              return `<div class="pokeball-dot pokeball-fainted" title="${mon.revealed ? mon.name + ' (Fainted)' : 'Fainted Reserve'}"></div>`;
+
+            }
+
+            if (isEnemy && !mon.revealed) {
+
+              return `<div class="pokeball-dot pokeball-hidden" title="Hidden Reserve Pokémon #${idx + 1}"></div>`;
+
+            }
+
+            return `<div class="pokeball-dot pokeball-healthy" title="${mon.name} (${mon.hp}/${mon.maxHp} HP)"></div>`;
+
+          }).join('')}
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    function renderHeader() {
+
+      return `
+
+        <header class="flex flex-wrap items-center justify-between gap-2 px-5 py-3 bg-slate-900/95 border-b border-slate-800">
+
+          <div class="flex items-center gap-3">
+
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center font-black text-slate-950 shadow-lg">
+
+              BF
+
+            </div>
+
+            <div>
+
+              <div class="flex items-center gap-2">
+
+                <h1 class="font-extrabold text-sm sm:text-base tracking-tight text-white">BATTLE FACTORY — REG M-C DOUBLES</h1>
+
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+
+                  ${POKEDEX.length} SPECIES
+
+                </span>
+
+              </div>
+
+              <p class="text-[11px] text-slate-400">對戰工廠 • Optional Mega Evolution • 4v4 Doubles</p>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="flex items-center gap-2">
+
+            <div class="px-3 py-1 rounded-xl bg-slate-800/90 border border-slate-700 text-xs font-bold text-amber-300">
+
+              Streak: <span class="text-white">${state.streak}</span>
+
+            </div>
+
+            <button onclick="state.shinyCharm = !state.shinyCharm; render();"
+
+              class="px-3 py-1.5 rounded-xl border text-xs font-bold transition ${state.shinyCharm ? 'bg-amber-500/20 border-amber-400 text-amber-300' : 'bg-slate-800 border-slate-700 text-slate-400 hover:text-slate-200'}">
+
+              ✨ Shiny: ${state.shinyCharm ? 'ON' : 'OFF'}
+
+            </button>
+
+            <button onclick="state.speedMult = state.speedMult === 1 ? 2 : 1; render();"
+
+              class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-bold text-cyan-300 transition">
+
+              Pace: ${state.speedMult}x
+
+            </button>
+
+          </div>
+
+        </header>
+
+      `;
+
+    }
+
+
+
+    // --- SCREEN 1: RENTAL DRAFT ---
+
+    function renderDraftScreen() {
+
+      const count = state.selectedDraftIds.length;
+
+      return `
+
+        ${renderHeader()}
+
+        <div class="flex-1 p-5 flex flex-col justify-between overflow-y-auto">
+
+          <div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+
+              <div>
+
+                <h2 class="text-lg font-extrabold text-white">Select Your 4-Pokémon Doubles Rental Squad</h2>
+
+                <p class="text-xs text-slate-400">
+
+                  First 2 picked are Active Leads; next 2 are Reserve Bench. Pokémon holding a Mega Stone start in Base Form and can optionally Mega Evolve whenever you toggle it ON!
+
+                </p>
+
+              </div>
+
+              <div class="flex items-center gap-2">
+
+                <button onclick="initDraft()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700">
+
+                  ↻ Reroll Rentals
+
+                </button>
+
+                <button onclick="confirmDraftTeam()" ${count !== 4 ? 'disabled' : ''}
+
+                  class="px-5 py-2 rounded-xl font-extrabold text-xs transition shadow-lg ${count === 4 ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 cursor-pointer' : 'bg-slate-800 text-slate-500 cursor-not-allowed'}">
+
+                  Enter Arena (${count}/4) →
+
+                </button>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+
+              ${state.draftPool.map(mon => {
+
+                const pickOrder = state.selectedDraftIds.indexOf(mon.uid);
+
+                const isSelected = pickOrder !== -1;
+
+                const roleBadge = pickOrder === 0 ? 'LEAD 1' : pickOrder === 1 ? 'LEAD 2' : pickOrder >= 2 ? `RESERVE ${pickOrder - 1}` : null;
+
+                const megaInfo = MEGA_FORMS[mon.baseName];
+
+                const hasMegaStone = megaInfo && mon.item.name === megaInfo.stone;
+
+                return `
+
+                  <div onclick="toggleDraftPick('${mon.uid}')"
+
+                    class="p-3.5 rounded-2xl border transition cursor-pointer relative ${isSelected ? 'bg-emerald-950/35 border-emerald-400 shadow-lg shadow-emerald-950/40' : 'bg-slate-900/80 border-slate-800 hover:border-slate-600'}">
+
+                    ${roleBadge ? `<span class="absolute top-3 right-3 px-2 py-0.5 rounded-lg text-[10px] font-black bg-emerald-500 text-slate-950">${roleBadge}</span>` : ''}
+
+                    <div class="flex items-center gap-3 mb-2">
+
+                      <img src="${getSpriteUrl(mon.id)}" alt="${mon.name}" class="w-16 h-16 object-contain bg-slate-950/60 rounded-xl p-1"
+
+                        onerror="this.src='https://placehold.co/64x64/1e293b/94a3b8?text=${encodeURIComponent(mon.name.slice(0,3))}'">
+
+                      <div>
+
+                        <div class="flex items-center gap-1.5">
+
+                          <span class="font-extrabold text-sm text-white">${mon.name}</span>
+
+                          ${hasMegaStone ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-fuchsia-500/25 text-fuchsia-300 border border-fuchsia-500/40">MEGA</span>` : ''}
+
+                        </div>
+
+                        <div class="flex gap-1 mt-1">${mon.types.map(renderTypeBadge).join('')}</div>
+
+                        <div class="text-[11px] text-amber-300 font-medium mt-1">
+
+                          ${mon.ability} • <span class="text-cyan-300" title="${mon.item.desc}">${mon.item.name}</span>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-1.5 mt-2">
+
+                      ${mon.moves.map(m => {
+
+                        const mv = MOVES[m];
+
+                        return `
+
+                          <div class="px-2 py-1 rounded-lg bg-slate-950/70 border border-slate-800/80 flex items-center justify-between text-[11px]">
+
+                            <span class="font-semibold text-slate-200 truncate">${m}</span>
+
+                            <span class="w-2 h-2 rounded-full shrink-0 ml-1" style="background:${TYPE_COLORS[mv?.type] || '#94a3b8'}"></span>
+
+                          </div>
+
+                        `;
+
+                      }).join('')}
+
+                    </div>
+
+                  </div>
+
+                `;
+
+              }).join('')}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    // --- SCREEN 2: DOUBLES ARENA ---
+
+    function renderMonHudCard(mon, side, slotPos, isTargetable = false) {
+
+      if (!mon || mon.fainted) {
+
+        return `
+
+          <div class="p-3 rounded-2xl bg-slate-950/40 border border-dashed border-slate-800 text-center text-xs text-slate-500">
+
+            Slot ${slotPos + 1} Empty
+
+          </div>
+
+        `;
+
+      }
+
+      const hpPct = Math.max(0, Math.min(100, (mon.hp / mon.maxHp) * 100));
+
+      const hpColor = hpPct > 50 ? 'bg-emerald-500' : hpPct > 25 ? 'bg-amber-400' : 'bg-rose-500';
+
+      const isSelectingThis = side === 'player' && !state.animating && state.promptQueue.length === 0 && state.selectingSlotPos === slotPos;
+
+
+
+      const statusLabels = { brn: 'BRN 灼傷', par: 'PAR 麻痺', psn: 'PSN 中毒', slp: 'SLP 睡眠', frz: 'FRZ 冰凍' };
+
+      const stageBadges = Object.entries(mon.stages)
+
+        .filter(([_, v]) => v !== 0)
+
+        .map(([k, v]) => `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold ${v > 0 ? 'bg-cyan-500/20 text-cyan-300' : 'bg-rose-500/20 text-rose-300'}">${k.toUpperCase()} ${v > 0 ? '+' + v : v}</span>`)
+
+        .join('');
+
+
+
+      return `
+
+        <div ${isTargetable ? `onclick="selectTarget('${side}', ${slotPos})"` : ''}
+
+          class="p-2.5 rounded-2xl bg-slate-900/90 border transition relative ${
+
+            isTargetable
+
+              ? 'border-amber-400 ring-2 ring-amber-400/60 cursor-pointer hover:bg-amber-950/40'
+
+              : isSelectingThis
+
+                ? 'border-emerald-400 ring-2 ring-emerald-400/35'
+
+                : mon.isMega
+
+                  ? 'border-fuchsia-500/50'
+
+                  : 'border-slate-800'
+
+          }">
+
+          ${isTargetable ? `<span class="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-400 text-slate-950 shadow">${side === 'player' ? '🎯 TARGET PARTNER' : '🎯 TARGET'}</span>` : ''}
+
+          <div class="flex items-center justify-between gap-2">
+
+            <div class="flex items-center gap-1.5 min-w-0">
+
+              <span class="font-extrabold text-xs sm:text-sm ${mon.isMega ? 'text-fuchsia-300' : 'text-white'} truncate">${mon.name}</span>
+
+              ${mon.status ? `<span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-amber-500 text-slate-950 shrink-0">${statusLabels[mon.status] || mon.status}</span>` : ''}
+
+            </div>
+
+            <div class="flex gap-1 shrink-0">${mon.types.map(renderTypeBadge).join('')}</div>
+
+          </div>
+
+
+
+          <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden mt-1.5">
+
+            <div class="h-full ${hpColor} transition-all duration-300" style="width:${hpPct}%"></div>
+
+          </div>
+
+
+
+          <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1">
+
+            <span class="font-mono font-bold text-slate-200">${mon.hp}/${mon.maxHp} HP</span>
+
+            <span class="truncate max-w-[160px] text-cyan-300" title="${mon.item ? mon.item.desc : ''}">${mon.ability} • ${mon.item ? mon.item.name : 'No Item'}</span>
+
+          </div>
+
+
+
+          ${stageBadges ? `<div class="flex flex-wrap gap-1 mt-1.5">${stageBadges}</div>` : ''}
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    function renderBattleScreen() {
+
+      const e0 = getActiveMon('enemy', 0);
+
+      const e1 = getActiveMon('enemy', 1);
+
+      const p0 = getActiveMon('player', 0);
+
+      const p1 = getActiveMon('player', 1);
+
+
+
+      const enemyHiddenCount = state.enemyTeam.filter(m => !m.revealed && !m.fainted).length;
+
+      const enemyAliveTotal = state.enemyTeam.filter(m => !m.fainted).length;
+
+      const playerAliveTotal = state.playerTeam.filter(m => !m.fainted).length;
+
+
+
+      const isTargetMode = state.uiSubMode === 'TARGET' && !state.animating && state.promptQueue.length === 0;
+
+      const chosenMv = state.selectedMoveName ? MOVES[state.selectedMoveName] : null;
+
+      const canTargetAlly = isTargetMode && chosenMv && (chosenMv.target === 'foe' || chosenMv.target === 'any');
+
+
+
+      return `
+
+        ${renderHeader()}
+
+        <div class="flex-1 flex flex-col justify-between arena-bg relative overflow-hidden">
+
+
+
+          <!-- Cut-in Banner -->
+
+          ${state.cutinBanner ? `
+
+            <div class="absolute top-16 left-1/2 z-40 px-6 py-2.5 rounded-2xl bg-gradient-to-r ${state.cutinBanner.color} shadow-2xl border border-white/30 anim-cutin text-center">
+
+              <div class="text-[10px] font-black tracking-widest uppercase text-white/90">${state.cutinBanner.title}</div>
+
+              <div class="text-sm font-black text-white">${state.cutinBanner.subtitle}</div>
+
+            </div>
+
+          ` : ''}
+
+
+
+          <!-- Top Bar: Squad Pokéball Indicators + Field Conditions -->
+
+          <div class="flex flex-wrap items-center justify-between gap-2 px-5 py-2.5 bg-slate-950/60 border-b border-slate-800/80">
+
+            <div class="flex items-center gap-2.5 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-800">
+
+              <span class="text-[11px] font-extrabold text-emerald-300">YOUR SQUAD (${playerAliveTotal}/4)</span>
+
+              ${renderPokeballStrip(state.playerTeam, false)}
+
+            </div>
+
+
+
+            <div class="flex items-center gap-1.5 text-[10px] font-bold">
+
+              <span class="px-2 py-1 rounded-lg bg-slate-800 text-slate-300">Turn ${state.turn}</span>
+
+              ${state.field.weather ? `<span class="px-2 py-1 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-500/30">${state.field.weather} (${state.field.weatherTurns}t)</span>` : ''}
+
+              ${state.field.terrain ? `<span class="px-2 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">${state.field.terrain} (${state.field.terrainTurns}t)</span>` : ''}
+
+              ${state.field.trickRoom > 0 ? `<span class="px-2 py-1 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/30">Trick Room (${state.field.trickRoom}t)</span>` : ''}
+
+              ${state.field.playerTailwind > 0 ? `<span class="px-2 py-1 rounded-lg bg-cyan-500/20 text-cyan-300">Your Tailwind (${state.field.playerTailwind}t)</span>` : ''}
+
+              ${state.field.enemyTailwind > 0 ? `<span class="px-2 py-1 rounded-lg bg-rose-500/20 text-rose-300">Foe Tailwind (${state.field.enemyTailwind}t)</span>` : ''}
+
+            </div>
+
+
+
+            <div class="flex items-center gap-2.5 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-800">
+
+              <div class="text-right">
+
+                <div class="text-[11px] font-extrabold text-sky-300">${state.trainer.title} ${state.trainer.name} (${enemyAliveTotal}/4)</div>
+
+                <div class="text-[9px] text-slate-400">${enemyHiddenCount > 0 ? `${enemyHiddenCount} Hidden Reserve${enemyHiddenCount > 1 ? 's' : ''}` : 'All 4 Revealed'}</div>
+
+              </div>
+
+              ${renderPokeballStrip(state.enemyTeam, true)}
+
+            </div>
+
+          </div>
+
+
+
+          <!-- Middle Doubles Battlefield Stage -->
+
+          <div class="flex-1 grid grid-cols-1 md:grid-cols-12 gap-3 px-5 py-3 items-center">
+
+            <div class="md:col-span-8 flex flex-col justify-between h-full gap-3">
+
+              <!-- Opponent Side -->
+
+              <div class="grid grid-cols-2 gap-3 items-end">
+
+                ${[0, 1].map(pos => {
+
+                  const mon = pos === 0 ? e0 : e1;
+
+                  const key = `enemy-${pos}`;
+
+                  const animCls = state.animFlags[key] || (mon && !mon.fainted ? 'anim-idle' : '');
+
+                  const auraCls = mon && !mon.fainted && mon.status ? `aura-${mon.status}` : '';
+
+                  const pop = state.popups[key];
+
+                  return `
+
+                    <div class="flex flex-col gap-1.5">
+
+                      ${renderMonHudCard(mon, 'enemy', pos, isTargetMode)}
+
+                      <div ${isTargetMode && mon && !mon.fainted ? `onclick="selectTarget('enemy', ${pos})"` : ''}
+
+                        class="h-24 rounded-2xl arena-platform-foe flex items-center justify-center relative ${isTargetMode && mon && !mon.fainted ? 'cursor-pointer ring-2 ring-amber-400/70' : ''}">
+
+                        ${pop ? `<div class="absolute top-1 left-1/2 z-30 font-mono font-black text-xs ${pop.color} drop-shadow anim-popup">${pop.text}</div>` : ''}
+
+                        ${mon && !mon.fainted ? `
+
+                          <img src="${getSpriteUrl(mon.id, false)}" alt="${mon.name}"
+
+                            class="w-24 h-24 object-contain drop-shadow-lg ${animCls} ${auraCls}"
+
+                            onerror="this.src='https://placehold.co/80x80/0f172a/38bdf8?text=${encodeURIComponent(mon.name.slice(0,4))}'">
+
+                        ` : `<span class="text-[11px] text-slate-600 font-semibold">Fainted</span>`}
+
+                      </div>
+
+                    </div>
+
+                  `;
+
+                }).join('')}
+
+              </div>
+
+
+
+              <!-- Player Side -->
+
+              <div class="grid grid-cols-2 gap-3 items-start">
+
+                ${[0, 1].map(pos => {
+
+                  const mon = pos === 0 ? p0 : p1;
+
+                  const key = `player-${pos}`;
+
+                  const animCls = state.animFlags[key] || (mon && !mon.fainted ? 'anim-idle' : '');
+
+                  const auraCls = mon && !mon.fainted && mon.status ? `aura-${mon.status}` : '';
+
+                  const isAllyTarget = canTargetAlly && pos !== state.selectingSlotPos;
+
+                  const pop = state.popups[key];
+
+                  return `
+
+                    <div class="flex flex-col gap-1.5">
+
+                      <div ${isAllyTarget && mon && !mon.fainted ? `onclick="selectTarget('player', ${pos})"` : ''}
+
+                        class="h-24 rounded-2xl arena-platform-ally flex items-center justify-center relative ${isAllyTarget && mon && !mon.fainted ? 'cursor-pointer ring-2 ring-amber-400/70' : ''}">
+
+                        ${pop ? `<div class="absolute top-1 left-1/2 z-30 font-mono font-black text-xs ${pop.color} drop-shadow anim-popup">${pop.text}</div>` : ''}
+
+                        ${mon && !mon.fainted ? `
+
+                          <img src="${getSpriteUrl(mon.id, true)}" alt="${mon.name}"
+
+                            class="w-24 h-24 object-contain drop-shadow-lg ${animCls} ${auraCls}"
+
+                            onerror="this.src='https://placehold.co/80x80/0f172a/10b981?text=${encodeURIComponent(mon.name.slice(0,4))}'">
+
+                        ` : `<span class="text-[11px] text-slate-600 font-semibold">Fainted</span>`}
+
+                      </div>
+
+                      ${renderMonHudCard(mon, 'player', pos, isAllyTarget)}
+
+                    </div>
+
+                  `;
+
+                }).join('')}
+
+              </div>
+
+            </div>
+
+
+
+            <!-- Right Column: Opponent Roster Intel & Live Battle Log -->
+
+            <div class="md:col-span-4 flex flex-col gap-2.5 h-full max-h-[350px]">
+
+              <div class="p-2.5 rounded-2xl bg-slate-900/85 border border-slate-800">
+
+                <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 mb-1.5">
+
+                  Opponent 4-Pokémon Roster
+
+                </div>
+
+                <div class="grid grid-cols-2 gap-1.5">
+
+                  ${state.enemyTeam.map(m => {
+
+                    if (!m.revealed) {
+
+                      return `
+
+                        <div class="px-2 py-1.5 rounded-xl bg-indigo-950/40 border border-indigo-500/30 flex items-center gap-1.5 text-[11px] text-indigo-300 font-bold">
+
+                          <span class="w-4 h-4 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[9px]">?</span>
+
+                          <span>Hidden Reserve</span>
+
+                        </div>
+
+                      `;
+
+                    }
+
+                    return `
+
+                      <div class="px-2 py-1.5 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center justify-between text-[11px] ${m.fainted ? 'opacity-45 line-through text-slate-500' : 'text-slate-200 font-semibold'}">
+
+                        <span class="truncate">${m.name}</span>
+
+                        <span class="text-[9px] font-mono ${m.fainted ? 'text-rose-400' : 'text-emerald-400'}">${m.fainted ? 'FNT' : Math.ceil((m.hp/m.maxHp)*100)+'%'}</span>
+
+                      </div>
+
+                    `;
+
+                  }).join('')}
+
+                </div>
+
+              </div>
+
+
+
+              <div id="battle-log-box" class="flex-1 p-3 rounded-2xl bg-slate-950/85 border border-slate-800 overflow-y-auto space-y-1.5 text-xs">
+
+                ${state.logs.map(l => `<div class="${l.colorClass} leading-snug">› ${l.msg}</div>`).join('')}
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- Bottom Command Deck -->
+
+          <div class="px-5 py-3 bg-slate-900/95 border-t border-slate-800">
+
+            ${renderCommandDeck()}
+
+          </div>
+
+
+
+          ${state.promptQueue.length > 0 ? renderSwitchPromptModal() : ''}
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    function renderCommandDeck() {
+
+      if (state.animating) {
+
+        return `
+
+          <div class="h-24 flex items-center justify-center text-sm font-bold text-cyan-300 animate-pulse">
+
+            Executing Doubles Turn...
+
+          </div>
+
+        `;
+
+      }
+
+
+
+      const activeMon = getActiveMon('player', state.selectingSlotPos);
+
+      if (!activeMon || activeMon.fainted) {
+
+        return `<div class="h-24 flex items-center justify-center text-xs text-slate-400">Waiting for active slot...</div>`;
+
+      }
+
+
+
+      const benchIndices = getAvailableBenchIndices('player');
+
+      const otherPos = state.selectingSlotPos === 0 ? 1 : 0;
+
+      const otherAct = state.pendingActions[otherPos];
+
+      const eligibleForMega = canMonMegaEvolve(activeMon);
+
+      const megaInfo = MEGA_FORMS[activeMon.baseName];
+
+
+
+      if (state.uiSubMode === 'TARGET') {
+
+        const chosenMv = state.selectedMoveName ? MOVES[state.selectedMoveName] : null;
+
+        const ally = getActiveMon('player', otherPos);
+
+        const canTargetPartner = ally && !ally.fainted && chosenMv && (chosenMv.target === 'foe' || chosenMv.target === 'any');
+
+        return `
+
+          <div class="h-24 flex flex-col justify-between">
+
+            <div class="flex items-center justify-between">
+
+              <span class="text-xs font-extrabold text-amber-300">
+
+                Select Target for ${activeMon.name}'s ${state.selectedMoveName} ${state.megaWant && eligibleForMega ? `<span class="text-fuchsia-300">(+ Mega Evolve!)</span>` : ''}:
+
+              </span>
+
+              <button onclick="state.uiSubMode='MAIN'; state.megaWant=false; render();" class="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 cursor-pointer">
+
+                ← Back to Moves
+
+              </button>
+
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+
+              ${[0, 1].map(pos => {
+
+                const foe = getActiveMon('enemy', pos);
+
+                if (!foe || foe.fainted) return '';
+
+                const eff = getTypeEffectiveness(MOVES[state.selectedMoveName].type, foe.types);
+
+                const effLabel = eff > 1 ? 'Super Effective' : eff === 0 ? 'Immune' : eff < 1 ? 'Not Very Effective' : 'Neutral';
+
+                return `
+
+                  <button onclick="selectTarget('enemy', ${pos})"
+
+                    class="p-2.5 rounded-xl bg-rose-950/50 hover:bg-rose-900/70 border border-rose-500/40 text-left transition cursor-pointer">
+
+                    <div class="font-extrabold text-xs text-white">🎯 Target Foe ${pos + 1}: ${foe.name}</div>
+
+                    <div class="text-[10px] text-amber-300 mt-0.5">${effLabel} (${eff}x)</div>
+
+                  </button>
+
+                `;
+
+              }).join('')}
+
+              ${canTargetPartner ? (() => {
+
+                const eff = getTypeEffectiveness(MOVES[state.selectedMoveName].type, ally.types);
+
+                const subText = chosenMv?.pollenPuff
+
+                  ? 'Heal 50% Max HP'
+
+                  : chosenMv?.cat === 'Status'
+
+                    ? 'Apply Status / Effect to Partner'
+
+                    : `Hit Partner (${eff}x)`;
+
+                return `
+
+                  <button onclick="selectTarget('player', ${otherPos})"
+
+                    class="p-2.5 rounded-xl bg-emerald-950/50 hover:bg-emerald-900/70 border border-emerald-500/40 text-left transition cursor-pointer">
+
+                    <div class="font-extrabold text-xs text-white">🤝 Target Partner (${ally.name})</div>
+
+                    <div class="text-[10px] text-emerald-300 mt-0.5">${subText}</div>
+
+                  </button>
+
+                `;
+
+              })() : ''}
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+
+
+
+      if (state.uiSubMode === 'SWITCH') {
+
+        return `
+
+          <div class="h-24 flex flex-col justify-between">
+
+            <div class="flex items-center justify-between">
+
+              <span class="text-xs font-extrabold text-cyan-300">Switch ${activeMon.name} with a Reserve Pokémon:</span>
+
+              <button onclick="state.uiSubMode='MAIN'; render();" class="px-3 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-200 cursor-pointer">
+
+                ← Back to Moves
+
+              </button>
+
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+
+              ${benchIndices.length === 0 ? `<div class="text-xs text-slate-400">No healthy reserve Pokémon available!</div>` : benchIndices.map(bIdx => {
+
+                const bMon = state.playerTeam[bIdx];
+
+                const alreadyPicked = otherAct && otherAct.type === 'SWITCH' && otherAct.toTeamIdx === bIdx;
+
+                return `
+
+                  <button onclick="selectBenchSwitch(${bIdx})" ${alreadyPicked ? 'disabled' : ''}
+
+                    class="p-2.5 rounded-xl border text-left flex items-center justify-between transition ${alreadyPicked ? 'bg-slate-900 border-slate-800 opacity-45 cursor-not-allowed' : 'bg-slate-800 hover:bg-slate-700 border-slate-600 cursor-pointer'}">
+
+                    <div>
+
+                      <div class="font-extrabold text-xs text-white">${bMon.name} ${alreadyPicked ? '(Selected by Partner)' : ''}</div>
+
+                      <div class="text-[10px] text-slate-400">${bMon.ability} • ${bMon.item.name}</div>
+
+                    </div>
+
+                    <span class="text-xs font-mono font-bold text-emerald-400">${bMon.hp}/${bMon.maxHp} HP</span>
+
+                  </button>
+
+                `;
+
+              }).join('')}
+
+            </div>
+
+          </div>
+
+        `;
+
+      }
+
+
+
+      return `
+
+        <div class="flex flex-col gap-2">
+
+          <div class="flex flex-wrap items-center justify-between gap-2">
+
+            <div class="flex items-center gap-2">
+
+              <span class="px-2 py-0.5 rounded-lg text-[10px] font-black bg-emerald-500 text-slate-950">
+
+                SLOT ${state.selectingSlotPos + 1} (${state.selectingSlotPos === 0 ? 'LEFT' : 'RIGHT'})
+
+              </span>
+
+              <span class="text-xs font-extrabold text-white">What will ${activeMon.name} do?</span>
+
+            </div>
+
+
+
+            <div class="flex items-center gap-2">
+
+              ${eligibleForMega ? `
+
+                <button onclick="toggleMegaWant()"
+
+                  class="px-3.5 py-1 rounded-xl border text-xs font-black transition flex items-center gap-1.5 shadow cursor-pointer ${
+
+                    state.megaWant
+
+                      ? 'bg-gradient-to-r from-fuchsia-600 to-pink-500 border-fuchsia-300 text-white ring-2 ring-fuchsia-400/50'
+
+                      : 'bg-slate-800 hover:bg-slate-750 border-fuchsia-500/40 text-fuchsia-300'
+
+                  }">
+
+                  <span>🧬 Mega Evolve (${megaInfo.megaName}):</span>
+
+                  <span class="px-1.5 py-0.2 rounded bg-black/30 text-[10px]">${state.megaWant ? 'ON ✓' : 'OFF'}</span>
+
+                </button>
+
+              ` : ''}
+
+
+
+              ${state.selectingSlotPos === 1 && state.pendingActions[0] ? `
+
+                <button onclick="cancelBackToSlot0()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-amber-300 cursor-pointer">
+
+                  ↺ Undo Slot 1
+
+                </button>
+
+              ` : ''}
+
+
+
+              <button onclick="state.uiSubMode='SWITCH'; state.megaWant=false; render();" ${benchIndices.length === 0 ? 'disabled' : ''}
+
+                class="px-3 py-1 rounded-xl border text-xs font-bold transition ${benchIndices.length > 0 ? 'bg-indigo-600/30 hover:bg-indigo-600/50 border-indigo-400/50 text-indigo-200 cursor-pointer' : 'bg-slate-800 border-slate-700 text-slate-500 cursor-not-allowed'}">
+
+                ⇄ Switch Bench (${benchIndices.length})
+
+              </button>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+
+            ${activeMon.moves.map(mName => {
+
+              const mv = MOVES[mName] || { type: 'Normal', cat: 'Physical', pow: 60, target: 'foe' };
+
+              const bg = TYPE_COLORS[mv.type] || '#475569';
+
+              const targetTag = mv.target === 'allFoes' ? 'Spread Foes' : mv.target === 'allOthers' ? 'All Others' : mv.target === 'ally' ? 'Partner' : mv.target === 'self' || mv.target === 'field' ? 'Self/Field' : 'Single / Partner';
+
+              const locked = isMoveDisabledForMon(activeMon, mName);
+
+              const isChoiceLockedThis = isChoiceItem(activeMon.item) && activeMon.choiceLockedMove === mName;
+
+              const isEncoredThis = activeMon.encoredMove === mName && activeMon.encoreTurns > 0;
+
+              const safeMoveArg = mName.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+
+              return `
+
+                <button type="button" onclick="selectMove('${safeMoveArg}')" ${locked ? 'disabled' : ''}
+
+                  class="p-2.5 rounded-xl border text-left transition flex flex-col justify-between shadow ${
+
+                    locked
+
+                      ? 'bg-slate-950/70 border-slate-800/80 opacity-45 cursor-not-allowed'
+
+                      : `bg-slate-800/90 hover:bg-slate-700 ${state.megaWant && eligibleForMega ? 'border-fuchsia-500/50' : isChoiceLockedThis || isEncoredThis ? 'border-amber-400/70' : 'border-slate-700'} hover:border-white/40 cursor-pointer`
+
+                  }">
+
+                  <div class="flex items-center justify-between gap-1">
+
+                    <span class="font-extrabold text-xs text-white truncate">${mName}</span>
+
+                    <div class="flex items-center gap-1 shrink-0">
+
+                      ${locked ? `<span class="px-1.5 py-0.5 rounded text-[8px] font-black bg-rose-500/25 text-rose-300 border border-rose-500/40">LOCKED</span>` : ''}
+
+                      ${isChoiceLockedThis ? `<span class="px-1.5 py-0.5 rounded text-[8px] font-black bg-amber-500/25 text-amber-300 border border-amber-500/40">CHOICE</span>` : ''}
+
+                      <span class="px-1.5 py-0.5 rounded text-[9px] font-bold text-white" style="background:${bg}">${mv.type}</span>
+
+                    </div>
+
+                  </div>
+
+                  <div class="flex items-center justify-between text-[10px] text-slate-400 mt-1.5">
+
+                    <span>${mv.cat} • ${mv.pow > 0 ? mv.pow + ' BP' : 'Status'}</span>
+
+                    <span class="text-cyan-300 font-semibold">${targetTag}</span>
+
+                  </div>
+
+                </button>
+
+              `;
+
+            }).join('')}
+
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    function renderSwitchPromptModal() {
+
+      const prompt = state.promptQueue[0];
+
+      const benchIndices = getAvailableBenchIndices('player');
+
+      return `
+
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-30">
+
+          <div class="w-full max-w-md p-5 rounded-3xl bg-slate-900 border border-emerald-500/40 shadow-2xl">
+
+            <h3 class="text-base font-extrabold text-white">
+
+              ${prompt.reason === 'pivot' ? 'Pivot Switch-Out! Choose Next Pokémon' : 'Pokémon Fainted! Send Out Reserve'}
+
+            </h3>
+
+            <p class="text-xs text-slate-400 mt-1 mb-4">
+
+              Select which reserve Pokémon enters Slot ${prompt.slotPos + 1}:
+
+            </p>
+
+            <div class="space-y-2.5">
+
+              ${benchIndices.map(bIdx => {
+
+                const mon = state.playerTeam[bIdx];
+
+                return `
+
+                  <button onclick="confirmPromptSwitch(${bIdx})"
+
+                    class="w-full p-3 rounded-2xl bg-slate-800 hover:bg-emerald-950/50 border border-slate-700 hover:border-emerald-400 flex items-center justify-between transition cursor-pointer">
+
+                    <div class="flex items-center gap-3">
+
+                      <img src="${getSpriteUrl(mon.id)}" alt="${mon.name}" class="w-12 h-12 object-contain">
+
+                      <div class="text-left">
+
+                        <div class="font-extrabold text-sm text-white">${mon.name}</div>
+
+                        <div class="text-[11px] text-amber-300">${mon.ability} • ${mon.item.name}</div>
+
+                      </div>
+
+                    </div>
+
+                    <span class="text-xs font-mono font-bold text-emerald-400">${mon.hp}/${mon.maxHp} HP</span>
+
+                  </button>
+
+                `;
+
+              }).join('')}
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    // --- SCREEN 3: POST-BATTLE SWAP ---
+
+    function renderSwapScreen() {
+
+      const revealedEnemies = state.enemyTeam.filter(m => m.revealed);
+
+      const hiddenCount = state.enemyTeam.length - revealedEnemies.length;
+
+
+
+      return `
+
+        ${renderHeader()}
+
+        <div class="flex-1 p-5 flex flex-col justify-between overflow-y-auto">
+
+          <div>
+
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+
+              <div>
+
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+
+                  VICTORY • ROUND ${state.streak} CLEARED
+
+                </span>
+
+                <h2 class="text-lg font-extrabold text-white mt-1">Post-Battle Factory Trade</h2>
+
+                <p class="text-xs text-slate-400">
+
+                  Swap 1 of your Pokémon with an opponent Pokémon revealed in battle${hiddenCount > 0 ? ` (${hiddenCount} unrevealed reserve${hiddenCount > 1 ? 's' : ''} stay hidden)` : ''}, or keep your current squad.
+
+                </p>
+
+              </div>
+
+              <button onclick="startNextBattle()"
+
+                class="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs shadow-lg transition cursor-pointer">
+
+                Keep Squad & Next Round →
+
+              </button>
+
+            </div>
+
+
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+              <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+
+                <h3 class="text-xs font-extrabold uppercase tracking-wider text-sky-300 mb-3">
+
+                  1. Revealed Opponent Pokémon (Tap to Select)
+
+                </h3>
+
+                <div class="space-y-2.5">
+
+                  ${state.enemyTeam.map((mon, idx) => {
+
+                    if (!mon.revealed) {
+
+                      return `
+
+                        <div class="p-3 rounded-xl bg-indigo-950/30 border border-dashed border-indigo-500/30 flex items-center gap-3 opacity-75">
+
+                          <div class="w-11 h-11 rounded-xl bg-indigo-900/50 flex items-center justify-center font-black text-indigo-300">?</div>
+
+                          <div>
+
+                            <div class="font-bold text-xs text-indigo-200">Unrevealed Reserve Pokémon</div>
+
+                            <div class="text-[10px] text-indigo-400">Never entered the arena — cannot be traded</div>
+
+                          </div>
+
+                        </div>
+
+                      `;
+
+                    }
+
+                    const selected = state.selectedSwapEnemyIdx === idx;
+
+                    return `
+
+                      <div onclick="state.selectedSwapEnemyIdx = ${idx}; render();"
+
+                        class="p-3 rounded-xl border cursor-pointer transition flex items-center justify-between ${selected ? 'bg-sky-950/50 border-sky-400 ring-2 ring-sky-400/40' : 'bg-slate-950/70 border-slate-800 hover:border-slate-600'}">
+
+                        <div class="flex items-center gap-3">
+
+                          <img src="${getSpriteUrl(mon.baseId)}" alt="${mon.baseName}" class="w-12 h-12 object-contain">
+
+                          <div>
+
+                            <div class="font-extrabold text-xs text-white">${mon.baseName}</div>
+
+                            <div class="text-[10px] text-amber-300">${mon.baseAbility} • ${mon.item.name}</div>
+
+                            <div class="text-[10px] text-slate-400 mt-0.5">${mon.moves.join(' • ')}</div>
+
+                          </div>
+
+                        </div>
+
+                        <span class="text-[10px] font-bold px-2 py-1 rounded-lg ${selected ? 'bg-sky-400 text-slate-950' : 'bg-slate-800 text-slate-300'}">
+
+                          ${selected ? 'Selected' : 'Pick'}
+
+                        </span>
+
+                      </div>
+
+                    `;
+
+                  }).join('')}
+
+                </div>
+
+              </div>
+
+
+
+              <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
+
+                <h3 class="text-xs font-extrabold uppercase tracking-wider text-emerald-300 mb-3">
+
+                  2. Your 4-Pokémon Squad ${state.selectedSwapEnemyIdx !== null ? '(Tap One to Replace)' : '(Select an Opponent Mon First)'}
+
+                </h3>
+
+                <div class="space-y-2.5">
+
+                  ${state.playerTeam.map((mon, idx) => {
+
+                    const canSwap = state.selectedSwapEnemyIdx !== null;
+
+                    return `
+
+                      <div ${canSwap ? `onclick="executePostBattleSwap(${idx})"` : ''}
+
+                        class="p-3 rounded-xl border transition flex items-center justify-between ${canSwap ? 'bg-slate-950/80 border-emerald-500/40 hover:bg-emerald-950/40 cursor-pointer' : 'bg-slate-950/50 border-slate-800 opacity-80'}">
+
+                        <div class="flex items-center gap-3">
+
+                          <img src="${getSpriteUrl(mon.baseId)}" alt="${mon.baseName}" class="w-12 h-12 object-contain">
+
+                          <div>
+
+                            <div class="font-extrabold text-xs text-white">${mon.baseName} <span class="text-[10px] text-slate-400">(${idx < 2 ? 'Lead' : 'Reserve'})</span></div>
+
+                            <div class="text-[10px] text-amber-300">${mon.baseAbility} • ${mon.item.name}</div>
+
+                            <div class="text-[10px] text-slate-400 mt-0.5">${mon.moves.join(' • ')}</div>
+
+                          </div>
+
+                        </div>
+
+                        ${canSwap ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 font-extrabold text-[10px]">Swap In →</span>` : ''}
+
+                      </div>
+
+                    `;
+
+                  }).join('')}
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    // --- SCREEN 4: DEFEAT ---
+
+    function renderDefeatScreen() {
+
+      return `
+
+        ${renderHeader()}
+
+        <div class="flex-1 flex flex-col items-center justify-center p-6 text-center">
+
+          <div class="w-16 h-16 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-3xl mb-4">
+
+            🏆
+
+          </div>
+
+          <h2 class="text-2xl font-black text-white">Battle Factory Run Ended</h2>
+
+          <p class="text-sm text-slate-400 mt-1 max-w-md">
+
+            Defeated by ${state.trainer.title} ${state.trainer.name} after achieving a <span class="text-amber-300 font-bold">${state.streak}-win streak</span> in Reg M-C Doubles!
+
+          </p>
+
+          <button onclick="initDraft()"
+
+            class="mt-6 px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm shadow-lg transition cursor-pointer">
+
+            Start New Rental Challenge
+
+          </button>
+
+        </div>
+
+      `;
+
+    }
+
+
+
+    function render() {
+
+      const app = document.getElementById('app');
+
+      if (!app) return;
+
+      if (state.screen === 'DRAFT') app.innerHTML = renderDraftScreen();
+
+      else if (state.screen === 'BATTLE') app.innerHTML = renderBattleScreen();
+
+      else if (state.screen === 'SWAP') app.innerHTML = renderSwapScreen();
+
+      else if (state.screen === 'DEFEAT') app.innerHTML = renderDefeatScreen();
+
+    }
+
+
+
+    window.onload = () => {
+
+      initDraft();
+
+    };
+
+  </script>
+
+</body>
+
+</html>
